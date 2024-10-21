@@ -1,0 +1,52 @@
+[output]
+path = "./output"
+
+[region]
+path = ""
+area_column = ""
+
+[food_production.lifestock]
+path = ""
+file_type = "grid"
+
+[food_production.rice_yield]
+path = ""
+file_type = "grid"
+
+[food_production.other_crops]
+path = ""
+file_type = "vector"
+
+[food_production.aqua_culture]
+path = ""
+file_type = "vector"
+
+[food_supply.import]
+path = ""
+area_column = "name"
+file_type = "table"
+
+[food_supply.export]
+path = ""
+area_column = ""
+file_type = "table"
+
+[food_transfer_coefficient.GDP_per_capita_per_area]
+path = "" 
+file_type = "grid"
+
+[food_transfer_coefficient.road_density]
+path = ""
+file_type = "vector"
+
+[caloric_demand]
+demand = 2800
+
+[caloric_demand.population]
+path = ""
+file_type = "grid"
+
+[nutritional_value_per_crop]
+path = ""
+file_type = "table"
+
