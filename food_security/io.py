@@ -1,6 +1,7 @@
 from pathlib import Path
 import geopandas as gpd
 import rasterio
+from rasterstats import zonal_stats
 
 
 class GridReader:
@@ -9,7 +10,7 @@ class GridReader:
         self.affine = self.dataset.transform
         self.data = self.dataset.read(1)
 
-    def get_zonal_stat(
-        self, regions: gpd.GeoDataFrame, col_name: str, stat: str
+    def get_region_stats(
+        self, regions: gpd.GeoDataFrame, col_name: str, stats: list[str]
     ) -> gpd.GeoDataFrame:
-        geometries = regions.geometry
+        stats = zonal_stats(regions, self.data, affine=self.affine, stats=stats)
