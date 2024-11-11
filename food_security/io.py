@@ -4,7 +4,7 @@ import rasterio
 from rasterstats import zonal_stats
 
 
-class GridReader:
+class Grid:
     def __init__(self, fp: Path | str):
         self.dataset = rasterio.open(fp)
         self.affine = self.dataset.transform
@@ -14,3 +14,5 @@ class GridReader:
         self, regions: gpd.GeoDataFrame, col_name: str, stats: list[str]
     ) -> gpd.GeoDataFrame:
         stats = zonal_stats(regions, self.data, affine=self.affine, stats=stats)
+        for stat in stats:
+            pass
