@@ -5,12 +5,17 @@ from food_security.food_production import FoodProduction
 from food_security.food_supply import FoodSupply
 from food_security.food_value import FoodValue
 
+DEFAULT_CRS = "EPSG:4326"
+
 
 class FoodSecurity:
     def __init__(self, cfg_path: Path | str):
         self.config = ConfigReader(cfg_path)
         self.region = gpd.read_file(self.config["region"]["path"])
-        self.provinces = gpd.read_file(self.config["provinces"]["path"])
+        provinces = gpd.read_file(self.config["provinces"]["path"])
+        if provinces.crs != DEFAULT_CRS:
+            provinces = provinces.to_crs(DEFAULT_CRS)
+        self.provinces = provinces
 
     def run(self):
         # Calculate food production

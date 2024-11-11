@@ -1,3 +1,4 @@
+from glob import glob
 import geopandas as gpd
 
 
@@ -6,7 +7,7 @@ class FoodProduction:
         self.cfg = cfg["food_production"]
 
     def get_lifestock(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-        pass
+        paths = self.cfg["lifestock"].get("paths")
 
     def get_rice_yield(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
         pass
