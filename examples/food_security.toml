@@ -3,7 +3,9 @@ path = "./output"
 
 [region]
 path = ""
-area_column = ""
+
+[provinces]
+path = ""
 
 [food_production.lifestock]
 path = ""
@@ -23,12 +25,10 @@ file_type = "vector"
 
 [food_supply.import]
 path = ""
-area_column = "name"
 file_type = "table"
 
 [food_supply.export]
 path = ""
-area_column = ""
 file_type = "table"
 
 [food_transfer_coefficient.GDP_per_capita_per_area]
