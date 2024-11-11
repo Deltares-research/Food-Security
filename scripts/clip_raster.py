@@ -1,7 +1,6 @@
 import rasterio
 from rasterio.mask import mask
 import geopandas as gpd
-from shapely.geometry import box
 from pathlib import Path
 
 if __name__ == "__main__":
