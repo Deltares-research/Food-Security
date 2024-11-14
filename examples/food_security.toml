@@ -1,21 +1,24 @@
 [output]
 path = "./output"
 
-[region]
+[area]
+country = "Viet Nam"
+
+
+[area.region]
 path = ""
 
-[provinces]
+[area.provinces]
 path = ""
 
-[food_production.lifestock]
-paths = {
-    buffaloe = "P:/wflow_global/hydromt/socio_economic/glw/5_Bf_2010_Da.tif"
-    chicken = "P:/wflow_global/hydromt/socio_economic/glw/5_Ch_2010_Da.tif"
-    cattle = "P:/wflow_global/hydromt/socio_economic/glw/5_Ct_2010_Da.tif
-    duck = "P:/wflow_global/hydromt/socio_economic/glw/5_Dk_2010_Da.tif"
-    goat = "P:/wflow_global/hydromt/socio_economic/glw/5_Gt_2010_Da.tif"
-    pig = "P:/wflow_global/hydromt/socio_economic/glw/5_Pg_2010_Da.tif
-    }
+[food_production.lifestock.paths]
+buffalo = "P:/wflow_global/hydromt/socio_economic/glw/5_Bf_2010_Da.tif"
+chicken = "P:/wflow_global/hydromt/socio_economic/glw/5_Ch_2010_Da.tif"
+cattle = "P:/wflow_global/hydromt/socio_economic/glw/5_Ct_2010_Da.tif"
+duck = "P:/wflow_global/hydromt/socio_economic/glw/5_Dk_2010_Da.tif"
+goat = "P:/wflow_global/hydromt/socio_economic/glw/5_Gt_2010_Da.tif"
+pig = "P:/wflow_global/hydromt/socio_economic/glw/5_Pg_2010_Da.tif"
+horse = "P:/wflow_global/hydromt/socio_economic/glw/5_Ho_2010_Da.tif"
 
 [food_production.rice_yield]
 path = ""

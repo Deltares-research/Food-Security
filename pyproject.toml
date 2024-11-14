@@ -7,3 +7,14 @@ name = "food_security"
 authors = [{name = "Tjalling de Jong", email = "tjalling.dejong@deltares.nl"}]
 readme = "README.md"
 dynamic = ["version", "description"]
+
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+
+[tool.ruff]
+line-length = 120
+exclude = ["tests/*.py"]
