@@ -5,8 +5,8 @@ import geopandas as gpd
 import pandas as pd
 
 from food_security import DATA_DIR
-from food_security.data_reader import Grid
 from food_security.base import FSBase
+from food_security.data_reader import Grid
 
 logger = logging.getLogger(__name__)
 
