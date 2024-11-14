@@ -22,7 +22,7 @@ class FoodProduction(FSBase):
         """
         super().__init__(cfg=cfg)
 
-    def get_lifestock(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    def add_lifestock(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
         """Calculate the lifestock expressed as kg meat per ha per animal.
 
         Args:
@@ -50,19 +50,26 @@ class FoodProduction(FSBase):
         return region
 
 
-    def get_rice_yield(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    def add_rice_yield(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
         pass
 
-    def get_other_crops(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    def add_other_crops(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
         pass
 
-    def get_aquaculture(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    def add_aquaculture(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
         pass
 
 
-    def add_foodproduction_values(self, region:gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-        region = self.get_lifestock(region=region)
-        region = self.get_rice_yield(region=region)
-        region = self.get_other_crops(region=region)
-        return self.get_aquaculture(region=region)
+    # def add_foodproduction_values(self, region:gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    #     region = self.get_lifestock(region=region)
+    #     region = self.get_rice_yield(region=region)
+    #     region = self.get_other_crops(region=region)
+    #     return self.get_aquaculture(region=region)
+
+    def run(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+        for attr in dir(self):
+            if attr.startswith("add"):
+                method = getattr(self, attr)
+                region = method(region)
+        return region
 

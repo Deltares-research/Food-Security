@@ -11,6 +11,14 @@ def test_FoodProduction_get_lifestock(grid_file, regions):
     assert "n_buffalo" in result.columns
     assert "buffalo_kg_ha" in result.columns
 
+
+def test_FoodProduction_run(regions, grid_file, mocker):
+    food_production = FoodProduction(cfg={"area": "Viet Name", "lifestock": {"paths": {"buffalo":grid_file}}})
+    lifestock_mock_obj = mocker.patch.object(food_production, "add_lifestock")
+    region = food_production.run(region=regions)
+    lifestock_mock_obj.assert_called_once()
+
+
 @pytest.mark.local
 def test_FoodProduction_get_lifestock_with_data(regions):
     cfg_file = Path(__file__).parent.parent /"examples/food_security.toml"
@@ -22,4 +30,3 @@ def test_FoodProduction_get_lifestock_with_data(regions):
         assert f"{animal}_kg_ha" in regions.columns
 
 
-    
