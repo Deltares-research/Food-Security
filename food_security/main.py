@@ -1,5 +1,10 @@
-import geopandas as gpd
+"""Main module."""
+from __future__ import annotations
+
 from pathlib import Path
+
+import geopandas as gpd
+
 from food_security.config import ConfigReader
 from food_security.food_production import FoodProduction
 from food_security.food_supply import FoodSupply
@@ -9,7 +14,7 @@ DEFAULT_CRS = "EPSG:4326"
 
 
 class FoodSecurity:
-    def __init__(self, cfg_path: Path | str):
+    def __init__(self, cfg_path: Path | str) -> None:
         self.config = ConfigReader(cfg_path)
         self.region = gpd.read_file(self.config["region"]["path"])
         provinces = gpd.read_file(self.config["provinces"]["path"])
@@ -17,7 +22,7 @@ class FoodSecurity:
             provinces = provinces.to_crs(DEFAULT_CRS)
         self.provinces = provinces
 
-    def run(self):
+    def run(self) -> None:
         # Calculate food production
         food_production = FoodProduction(cfg=self.config)
         provinces = food_production.add_foodproduction_values(geometry=self.provinces)
@@ -25,7 +30,7 @@ class FoodSecurity:
         # Calculate food supply for the provinces
         food_supply = FoodSupply(cfg=self.config)
         provinces = food_supply.add_food_supply_per_province(
-            provinces=provinces, region=self.region
+            provinces=provinces, region=self.region,
         )
 
         # Calculate food value and variety

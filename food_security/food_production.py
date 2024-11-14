@@ -1,3 +1,4 @@
+"""FoodProduction module."""
 import logging
 
 import geopandas as gpd
@@ -5,14 +6,33 @@ import pandas as pd
 
 from food_security import DATA_DIR
 from food_security.data_reader import Grid
+from food_security.base import FSBase
 
 logger = logging.getLogger(__name__)
 
-class FoodProduction:
-    def __init__(self, cfg: dict):
-        self.cfg = cfg
+class FoodProduction(FSBase):
+    """FoodProduction class that groups methods for calculating the food production in an area."""
+
+    def __init__(self, cfg: dict) -> None:
+        """Instatiate a FoodProduction object.
+
+        Args:
+            cfg (dict): config dict
+
+        """
+        super().__init__(cfg=cfg)
 
     def get_lifestock(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+        """Calculate the lifestock expressed as kg meat per ha per animal.
+
+        Args:
+            region (gpd.GeoDataFrame): GeoDataFrame containing (multi)polygons that should contain a column with
+            'area [ha]'.
+
+        Returns:
+            gpd.GeoDataFrame: GeoDataFrame with the kg meat per ha per animal for every geometry.
+
+        """
         paths = self.cfg["food_production"]["lifestock"].get("paths")
         animal_yield = pd.read_csv(DATA_DIR / "animal_yield.csv")
         for key, path in paths.items():

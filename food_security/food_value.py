@@ -1,9 +1,12 @@
+"""Module containing the FoodValue class."""
 import geopandas as gpd
 
+from food_security.base import FSBase
 
-class FoodValue:
-    def __init__(self, cfg: dict):
-        self.cfg = cfg
+
+class FoodValue(FSBase):
+    def __init__(self, cfg: dict) -> None:
+        super().__init__(cfg=cfg)
 
     def get_population(self, geometry: gpd.GeoDataFrame):
         pass
