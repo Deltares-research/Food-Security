@@ -15,8 +15,15 @@ def test_FoodProduction_get_lifestock(grid_file, regions):
 def test_FoodProduction_run(regions, grid_file, mocker):
     food_production = FoodProduction(cfg={"area": "Viet Name", "lifestock": {"paths": {"buffalo":grid_file}}})
     lifestock_mock_obj = mocker.patch.object(food_production, "add_lifestock")
+    rice_yield_mock_obj = mocker.patch.object(food_production, "add_rice_yield")
+    other_crops_mock_obj = mocker.patch.object(food_production, "add_other_crops")
+    aquaculture_mock_obj = mocker.patch.object(food_production, "add_aquaculture")
+
     region = food_production.run(region=regions)
     lifestock_mock_obj.assert_called_once()
+    rice_yield_mock_obj.assert_called_once()
+    other_crops_mock_obj.assert_called_once()
+    aquaculture_mock_obj.assert_called_once()
 
 
 @pytest.mark.local

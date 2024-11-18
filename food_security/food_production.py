@@ -59,17 +59,16 @@ class FoodProduction(FSBase):
     def add_aquaculture(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
         pass
 
-
-    # def add_foodproduction_values(self, region:gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    #     region = self.get_lifestock(region=region)
-    #     region = self.get_rice_yield(region=region)
-    #     region = self.get_other_crops(region=region)
-    #     return self.get_aquaculture(region=region)
-
     def run(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-        for attr in dir(self):
-            if attr.startswith("add"):
-                method = getattr(self, attr)
-                region = method(region)
-        return region
+        """Run the food production methods for adding data to a GeoDataFrame.
+
+        Args:
+            region (gpd.GeoDataFrame): GeoDataFrame containing polygons of an area of interest
+
+        Returns:
+            gpd.GeoDataFrame: Region GeoDataFrame with data columns on food production
+
+        """
+        super().run(gdf=region)
+
 
