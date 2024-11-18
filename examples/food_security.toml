@@ -25,8 +25,18 @@ path = ""
 file_type = "grid"
 
 [food_production.other_crops]
-path = ""
-file_type = "vector"
+join_column = "provinces"
+
+[food_production.other_crops.paths]
+sea_fish = "C:/Users/jong/Projects/Food-Security-data/other_crops/E06.64.csv"
+oranges = "C:/Users/jong/Projects/Food-Security-data/other_crops/E06.40.csv"
+peanuts = "C:/Users/jong/Projects/Food-Security-data/other_crops/E06.35.csv"
+sugar_cane = "C:/Users/jong/Projects/Food-Security-data/other_crops/E06.33.csv"
+cassava = "C:/Users/jong/Projects/Food-Security-data/other_crops/E06.31.csv"
+sweet_potatoes = "C:/Users/jong/Projects/Food-Security-data/other_crops/E06.29.csv"
+maize = "C:/Users/jong/Projects/Food-Security-data/other_crops/E06.27.csv"
+
+
 
 [food_production.aqua_culture]
 path = ""
