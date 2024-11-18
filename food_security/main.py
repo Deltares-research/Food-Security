@@ -1,7 +1,7 @@
 """Main module."""
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import geopandas as gpd
 
@@ -9,6 +9,9 @@ from food_security.config import ConfigReader
 from food_security.food_production import FoodProduction
 from food_security.food_supply import FoodSupply
 from food_security.food_value import FoodValue
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 DEFAULT_CRS = "EPSG:4326"
 
@@ -25,7 +28,7 @@ class FoodSecurity:
     def run(self) -> None:
         # Calculate food production
         food_production = FoodProduction(cfg=self.config)
-        provinces = food_production.add_foodproduction_values(geometry=self.provinces)
+        provinces = food_production.run(region=self.provinces)
 
         # Calculate food supply for the provinces
         food_supply = FoodSupply(cfg=self.config)

@@ -1,12 +1,17 @@
 """FoodProduction module."""
-import logging
+from __future__ import annotations
 
-import geopandas as gpd
+import logging
+from typing import TYPE_CHECKING
+
 import pandas as pd
 
 from food_security import DATA_DIR
 from food_security.base import FSBase
 from food_security.data_reader import Grid
+
+if TYPE_CHECKING:
+    import geopandas as gpd
 
 logger = logging.getLogger(__name__)
 
@@ -46,15 +51,42 @@ class FoodProduction(FSBase):
                   (animal_yield["Area"] == self.cfg["area"]["country"]), "kg_per_animal"]
             logging.info("Calculating the total kg of meat for %s", key)
             total_kg = kg_per_animal.to_numpy()[0] * region[n_of_animals]
-            region[f"{key}_kg_ha"] = total_kg / region["area [ha]"]
+            region[f"{key}_kg"] = total_kg
         return region
 
 
     def add_rice_yield(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
         pass
 
-    def add_other_crops(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-        pass
+    def add_other_crops(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame | None:
+        """Add other crops data to region geodataframe.
+
+        Args:
+            region (gpd.GeoDataFrame):  GeoDataFrame containing polygons of an area of interest
+        Returns:
+            gpd.GeoDataFrame | None: GeoDataFrame with added columns for the other crops.
+
+        """
+        paths = self.cfg["food_production"]["other_crops"].get("paths")
+        if not paths:
+            logging.warning("No other crops data found")
+            return None
+
+        for key, path in paths.items():
+            data = pd.read_csv(path)
+            data[key] = pd.to_numeric(data[key], errors="coerce")
+            data = data.dropna()
+            data[key] = data[key] * 1e6 # convert thousands of tons to kg
+            join_column = "Name"
+            if col := self.cfg["food_production"]["other_crops"].get("join_column"):
+                join_column = col
+            region = region.merge(data, left_on="Name", right_on=join_column, how="left")
+            if join_column != "Name":
+                region = region.drop(columns=join_column)
+        return region
+
+
+
 
     def add_aquaculture(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
         pass

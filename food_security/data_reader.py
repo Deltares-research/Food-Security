@@ -15,8 +15,8 @@ if TYPE_CHECKING:
 class Grid:
     """Grid class for reading and handling grid data."""
 
-    def __init__(self, fp: Path | str):
-        self.dataset = rasterio.open(fp)
+    def __init__(self, file_path: Path | str):
+        self.dataset = rasterio.open(file_path)
         self.affine = self.dataset.transform
         self.data = self.dataset.read(1)
 
@@ -32,7 +32,6 @@ class Grid:
         for col, stat in cols.items():
             regions = self.get_region_stat(regions, col_name=col, stat=stat)
         return regions
-
 
 
 
