@@ -20,7 +20,7 @@ def _update_long(lst: list, config: dict, section: str) -> list:
     return lst
 
 
-def read(hisfile: str | Path, *,hia: bool =True) -> xr.dataset:
+def read(hisfile: str | Path, *,hia: bool = True) -> xr.dataset:
     """Read a hisfile to a xarray.Dataset.
 
     If hia is True, it will use the long location names from the .hia sidecar file
