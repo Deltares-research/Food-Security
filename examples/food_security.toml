@@ -1,7 +1,6 @@
-[output]
-path = "./output"
-
-[area]
+[main]
+year = 2016
+output_path = "./output"
 country = "Viet Nam"
 
 
@@ -47,7 +46,7 @@ path = ""
 file_type = "table"
 
 [food_supply.export]
-path = ""
+path = "C:/Users/jong/Projects/Food-Security-data/import_export/FAOSTAT_data_import_export_11-18-2024.csv"
 file_type = "table"
 
 [food_transfer_coefficient.GDP_per_capita_per_area]

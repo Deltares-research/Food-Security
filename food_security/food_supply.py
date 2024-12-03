@@ -1,8 +1,12 @@
 """Module containing the FoodSupply class."""
+import logging
+
 import geopandas as gpd
+import pandas as pd
 
 from food_security.base import FSBase
 
+logger = logging.getLogger(__name__)
 
 class FoodSupply(FSBase):
     def __init__(self, cfg: dict):
@@ -12,7 +16,10 @@ class FoodSupply(FSBase):
         pass
 
     def get_export(self):
-        pass
+        export_df = pd.read_csv(self.cfg["food_supply"]["export"]["path"])
+        export_df = export_df[export_df["Year"] == self.cfg["main"]["year"]]
+        food_types = (list(self.cfg["food_production"]["lifestock"]["paths"].keys())
+            + list(self.cfg["food_production"]["other_crops"]["paths"].keys()))
 
     def get_road_density(self, geometry: gpd.GeoDataFrame):
         pass

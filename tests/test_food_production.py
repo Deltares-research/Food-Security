@@ -1,17 +1,9 @@
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from food_security.config import ConfigReader
 from food_security.food_production import FoodProduction
-
-
-@pytest.fixture
-def example_config() -> dict:
-    cfg_file = Path(__file__).parent.parent /"examples/food_security.toml"
-    return ConfigReader(cfg_file)
 
 
 def test_FoodProduction_add_lifestock(grid_file, regions):
