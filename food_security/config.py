@@ -1,4 +1,5 @@
 """Module for the ConfigReader class."""
+
 import logging
 from collections.abc import MutableMapping
 from pathlib import Path

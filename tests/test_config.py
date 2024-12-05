@@ -1,5 +1,6 @@
-from food_security.config import ConfigReader
 import logging
+
+from food_security.config import ConfigReader
 
 
 def test_config_reader(caplog):

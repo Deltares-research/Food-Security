@@ -1,4 +1,5 @@
 """A lightweight CLI for the food security module."""
+
 import argparse
 import logging
 from pathlib import Path
@@ -9,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("path", help="Path to config file")
+
 
 if __name__ == "__main__":
     args = parser.parse_args()
@@ -22,4 +24,3 @@ if __name__ == "__main__":
 
     fs = FoodSecurity(cfg_path=config_file)
     fs.run()
-

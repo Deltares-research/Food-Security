@@ -20,7 +20,7 @@ def _update_long(lst: list, config: dict, section: str) -> list:
     return lst
 
 
-def read(hisfile: str | Path, *,hia: bool = True) -> xr.dataset:
+def read(hisfile: str | Path, *, hia: bool = True) -> xr.dataset:
     """Read a hisfile to a xarray.Dataset.
 
     If hia is True, it will use the long location names from the .hia sidecar file
@@ -35,7 +35,7 @@ def read(hisfile: str | Path, *,hia: bool = True) -> xr.dataset:
         header = f.read(120).decode("utf-8")
         timeinfo = f.read(40).decode("utf-8")
         datestr = timeinfo[4:14].replace(" ", "0") + timeinfo[14:23]
-        startdate = datetime.strptime(datestr, "%Y.%m.%d %H:%M:%S") # noqa: DTZ007
+        startdate = datetime.strptime(datestr, "%Y.%m.%d %H:%M:%S")  # noqa: DTZ007
         try:
             dt = int(timeinfo[30:-2])  # assumes unit is seconds
         except ValueError:
@@ -47,7 +47,7 @@ def read(hisfile: str | Path, *,hia: bool = True) -> xr.dataset:
         )
         params = [(f.read(20).rstrip()).decode("utf-8") for _ in range(noout)]
         locnrs, locs = [], []
-        for i in range(noseg): #noqa: B007
+        for i in range(noseg):  # noqa: B007
             locnrs.append(unpack("i", f.read(4))[0])
             locs.append((f.read(20).rstrip()).decode("utf-8"))
         dates = []
@@ -59,7 +59,6 @@ def read(hisfile: str | Path, *,hia: bool = True) -> xr.dataset:
             for s in range(noseg):
                 data[:, t, s] = np.fromfile(f, np.float32, noout)
     if hia:
-
         # if there is a hia file next to the his, use the long locations
         hia_path = Path(hisfile).with_suffix(".hia")
         if hia_path.is_file():
@@ -69,13 +68,10 @@ def read(hisfile: str | Path, *,hia: bool = True) -> xr.dataset:
             params = _update_long(params, config, "Long Parameters")
 
     return xr.Dataset(
-        {
-            param: (["time", "station"], data[i, ...])
-            for (i, param) in enumerate(params)
-        },
+        {param: (["time", "station"], data[i, ...]) for (i, param) in enumerate(params)},
         coords={
             "time": dates,
             "station": locs,
         },
-        attrs={"header":header, "scu":dt, "t0":startdate},
+        attrs={"header": header, "scu": dt, "t0": startdate},
     )

@@ -1,4 +1,5 @@
 """Module containing the FoodValue class."""
+
 import geopandas as gpd
 
 from food_security.base import FSBase

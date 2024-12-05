@@ -1,4 +1,5 @@
 """Main module."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -33,7 +34,8 @@ class FoodSecurity:
         # Calculate food supply for the provinces
         food_supply = FoodSupply(cfg=self.config)
         provinces = food_supply.add_food_supply_per_province(
-            provinces=provinces, region=self.region,
+            provinces=provinces,
+            region=self.region,
         )
 
         # Calculate food value and variety

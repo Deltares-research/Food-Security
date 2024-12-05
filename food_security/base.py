@@ -1,4 +1,5 @@
 """Module for base class for food security classes."""
+
 import geopandas as gpd
 
 
@@ -9,11 +10,9 @@ class FSBase:
         """Instantiate a FSBase object."""
         self.cfg = cfg
 
-    def run(self, gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    def run(self) -> gpd.GeoDataFrame:
         """Run the add data methods of a FSbase object."""
         for attr in dir(self):
             if attr.startswith("add"):
                 method = getattr(self, attr)
-                gdf = method(gdf)
-        return gdf
-
+                method()

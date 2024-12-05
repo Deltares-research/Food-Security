@@ -1,4 +1,5 @@
 """FoodProduction module."""
+
 from __future__ import annotations
 
 import logging
@@ -14,6 +15,7 @@ if TYPE_CHECKING:
     import geopandas as gpd
 
 logger = logging.getLogger(__name__)
+
 
 class FoodProduction(FSBase):
     """FoodProduction class that groups methods for calculating the food production in an area."""
@@ -38,14 +40,13 @@ class FoodProduction(FSBase):
             grid = Grid(path)
             n_of_animals = f"n_{key}"
             self.region = grid.get_region_stat(regions=self.region, col_name=n_of_animals, stat="sum")
-            self.region.loc[self.region[n_of_animals] < 0 ,n_of_animals] = 0 # set negative n of animals to 0
+            self.region.loc[self.region[n_of_animals] < 0, n_of_animals] = 0  # set negative n of animals to 0
             kg_per_animal = animal_yield.loc[
-                (animal_yield["animal"] == key) &
-                  (animal_yield["Area"] == self.cfg["area"]["country"]), "kg_per_animal"]
+                (animal_yield["animal"] == key) & (animal_yield["Area"] == self.cfg["main"]["country"]), "kg_per_animal"
+            ]
             logging.info("Calculating the total kg of meat for %s", key)
             total_kg = kg_per_animal.to_numpy()[0] * self.region[n_of_animals]
             self.region[f"{key}_kg"] = total_kg
-
 
     def add_rice_yield(self) -> None:
         """Add rice yield to self.region GeoDataFrame."""
@@ -55,16 +56,8 @@ class FoodProduction(FSBase):
             logging.info("Adding rice yield to regions.")
             self.region = self.region.merge(rice_yield_df, how="left", on="Name")
 
-
     def add_other_crops(self) -> None:
-        """Add other crops data to region geodataframe.
-
-        Args:
-            region (gpd.GeoDataFrame):  GeoDataFrame containing polygons of an area of interest
-        Returns:
-            gpd.GeoDataFrame | None: GeoDataFrame with added columns for the other crops.
-
-        """
+        """Add other crops data to region geodataframe."""
         paths = self.cfg["food_production"]["other_crops"].get("paths")
         if not paths:
             logging.warning("No other crops data found")
@@ -74,7 +67,7 @@ class FoodProduction(FSBase):
             data = pd.read_csv(path)
             data[key] = pd.to_numeric(data[key], errors="coerce")
             data = data.dropna()
-            data[key] = data[key] * 1e6 # convert thousands of tons to kg
+            data[key] = data[key] * 1e6  # convert thousands of tons to kg
             join_column = "Name"
             if col := self.cfg["food_production"]["other_crops"].get("join_column"):
                 join_column = col
@@ -83,22 +76,10 @@ class FoodProduction(FSBase):
             if join_column != "Name":
                 self.region = self.region.drop(columns=join_column)
 
-
-
     def add_aquaculture(self):
         pass
 
-    def run(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-        """Run the food production methods for adding data to a GeoDataFrame.
-
-        Args:
-            region (gpd.GeoDataFrame): GeoDataFrame containing polygons of an area of interest
-
-        Returns:
-            gpd.GeoDataFrame: Region GeoDataFrame with data columns on food production
-
-        """
-        super().run(gdf=region)
+    def run(self) -> gpd.GeoDataFrame:
+        """Run the food production methods for adding data to a GeoDataFrame."""
+        super().run()
         return self.region
-
-
