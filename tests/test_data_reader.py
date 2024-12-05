@@ -22,8 +22,8 @@ def test_Grid_get_region_stats(regions, grid_file):
 
 def test_read_and_transform_rice_yield_data(rice_yield_data, caplog):
     df = read_and_transform_rice_yield_table(rice_yield_data, year=2014)
-    assert "Can Tho" in df.region.to_numpy()
-    assert "Hau Giang" in df.region.to_numpy()
+    assert "Can Tho" in df.Name.to_numpy()
+    assert "Hau Giang" in df.Name.to_numpy()
     caplog.set_level(logging.WARNING)
     df = read_and_transform_rice_yield_table(rice_yield_data, year=2020)
     assert "No rice data found for year 2020" in caplog.text

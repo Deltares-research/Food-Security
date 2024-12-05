@@ -8,7 +8,8 @@ dependencies:
   - geopandas
   - rasterio
   - xarray
+  - openpyxl
+  - pytest
   - pip:
-      - pytest
       - tomli
       - rasterstats

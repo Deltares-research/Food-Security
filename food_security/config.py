@@ -22,10 +22,9 @@ class ConfigReader(dict):
 
         # Check paths in config
         for k in flattened_dict:
-            if k.endswith(".path") and k != "output.path":
-                if not Path(flattened_dict[k]).exists():
-                    log_msg = f"config input {k} contains a non-existing path"
-                    logger.warning(log_msg)
+            if k.endswith(".path") and k != "output.path" and not Path(flattened_dict[k]).exists():
+                log_msg = f"config input {k} contains a non-existing path"
+                logger.warning(log_msg)
 
     @staticmethod
     def _flatten_dict_gen(d, parent_key, sep):

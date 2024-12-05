@@ -62,7 +62,7 @@ def read_and_transform_rice_yield_table(file_path: str | Path, year: int) -> Non
         logger.warning("No rice data found for year %s", year)
         return None
     rice_yield = rice_yield_df[rice_yield_df["GMT"] == date].to_numpy()[0][1:]
-    data = [{"region": region, "rice_yield": rice} for region, rice in zip(regions, rice_yield)]
+    data = [{"Name": region, "rice_yield": rice} for region, rice in zip(regions, rice_yield)]
     return pd.DataFrame(data=data)
 
 
