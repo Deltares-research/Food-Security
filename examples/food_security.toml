@@ -20,8 +20,7 @@ pig = "P:/wflow_global/hydromt/socio_economic/glw/5_Pg_2010_Da.tif"
 horse = "P:/wflow_global/hydromt/socio_economic/glw/5_Ho_2010_Da.tif"
 
 [food_production.rice_yield]
-path = ""
-file_type = "grid"
+path = "C:/Users/jong/Projects/Food-Security-data/rice_yield/Prod_templateRibasim.xlsx"
 
 [food_production.other_crops]
 join_column = "provinces"
