@@ -24,3 +24,7 @@ def grid_file():
 def example_config() -> dict:
     cfg_file = Path(__file__).parent.parent /"examples/food_security.toml"
     return ConfigReader(cfg_file)
+
+@pytest.fixture
+def rice_yield_data():
+    return DATA_DIR / "Prod_templateRibasim_mekong.xlsx"
