@@ -33,3 +33,8 @@ def example_config() -> dict:
 @pytest.fixture
 def rice_yield_data():
     return DATA_DIR / "Prod_templateRibasim_mekong.xlsx"
+
+
+@pytest.fixture
+def his_file():
+    return TEST_DATA_DIR / "RIB_CULT_prod.his"

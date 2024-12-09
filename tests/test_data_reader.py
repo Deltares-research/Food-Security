@@ -1,8 +1,9 @@
 import logging
+from pathlib import Path
 
 import geopandas as gpd
 
-from food_security.data_reader import Grid, read_and_transform_rice_yield_table
+from food_security.data_reader import Grid, HisFile, read_and_transform_rice_yield_table
 
 
 def test_Grid_get_region_stat(regions, grid_file):
@@ -32,3 +33,17 @@ def test_read_and_transform_rice_yield_data(rice_yield_data, caplog):
     df = read_and_transform_rice_yield_table(rice_yield_data, year=2020)
     assert "No rice data found for year 2020" in caplog.text
     assert df is None
+
+
+def test_HisFile_read(his_file):
+    his_reader = HisFile(his_file)
+    his_reader.read()
+    assert "Actual farm gate pr_2" in his_reader.ds.data_vars
+    assert len(his_reader.ds.data_vars) == 23
+
+
+def test_HisFile_to_table(his_file: Path):
+    his_reader = HisFile(his_file)
+    his_reader.read()
+    df = his_reader.to_table(year=2014)
+    assert len(df) == 12
