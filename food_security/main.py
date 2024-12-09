@@ -19,6 +19,7 @@ DEFAULT_CRS = "EPSG:4326"
 
 class FoodSecurity:
     def __init__(self, cfg_path: Path | str) -> None:
+        """Instantiate a food security object."""
         self.config = ConfigReader(cfg_path)
         self.region = gpd.read_file(self.config["region"]["path"])
         provinces = gpd.read_file(self.config["provinces"]["path"])
@@ -27,6 +28,7 @@ class FoodSecurity:
         self.provinces = provinces
 
     def run(self) -> None:
+        """Run food security module."""
         # Calculate food production
         food_production = FoodProduction(cfg=self.config)
         provinces = food_production.run(region=self.provinces)
@@ -43,11 +45,11 @@ class FoodSecurity:
         provinces = food_value.add_food_value(provinces=provinces)
 
         # Calculate food security per province
-        result = self.calculate_food_security(provinces=provinces)
+        result = self._calculate_food_security(provinces=provinces)
 
         # Write result to file
 
         result.to_file()
 
-    def calculate_food_security(self, provinces: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    def _calculate_food_security(self, provinces: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
         pass

@@ -9,7 +9,7 @@ import pandas as pd
 
 from food_security import DATA_DIR
 from food_security.base import FSBase
-from food_security.data_reader import Grid, read_and_transform_rice_yield_table
+from food_security.data_reader import Grid, HisFile
 
 if TYPE_CHECKING:
     import geopandas as gpd
@@ -51,7 +51,9 @@ class FoodProduction(FSBase):
     def add_rice_yield(self) -> None:
         """Add rice yield to self.region GeoDataFrame."""
         path = self.cfg["food_production"]["rice_yield"]["path"]
-        rice_yield_df = read_and_transform_rice_yield_table(file_path=path, year=self.cfg["main"]["year"])
+        logging.info("Parsing rice yield data from his file.")
+        hisfile = HisFile(path).read()
+        rice_yield_df = hisfile.to_table(year=self.cfg["main"]["year"])
         if rice_yield_df:
             logging.info("Adding rice yield to regions.")
             self.region = self.region.merge(rice_yield_df, how="left", on="Name")
