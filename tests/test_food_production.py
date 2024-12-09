@@ -30,6 +30,13 @@ def test_FoodProduction_add_other_crops(regions, tmp_path):
     ).all()
 
 
+def test_FoodProduction_add_rice_yield(regions, his_file):
+    cfg = {"food_production": {"rice_yield": his_file}, "main": {"year": 2014}}
+    fp = FoodProduction(cfg=cfg, region=regions)
+    fp.add_rice_yield()
+    assert "rice_yield" in fp.region.columns
+
+
 def test_FoodProduction_run(regions, grid_file, mocker):
     food_production = FoodProduction(
         cfg={"main": {"country": "Viet Nam"}, "lifestock": {"paths": {"buffalo": grid_file}}},
