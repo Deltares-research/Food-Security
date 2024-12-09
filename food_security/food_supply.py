@@ -11,18 +11,25 @@ logger = logging.getLogger(__name__)
 
 
 class FoodSupply(FSBase):
+    """Calculate the total food supply based on import and export and food production."""
+
     def __init__(self, cfg: dict):
+        self.eximport_df = pd.read_csv(self.cfg["food_supply"]["export"]["path"])
         super().__init__(cfg=cfg)
 
     def get_import(self):
         pass
 
     def get_export(self):
-        export_df = pd.read_csv(self.cfg["food_supply"]["export"]["path"])
-        export_df = export_df[export_df["Year"] == self.cfg["main"]["year"]]
+        export_df = self.eximport_df.copy(deep=True)
+        export_df = export_df[
+            (export_df["Year"] == self.cfg["main"]["year"]) & (export_df["Element"] == "Export Quantity")
+        ]
         food_types = list(self.cfg["food_production"]["lifestock"]["paths"].keys()) + list(
-            self.cfg["food_production"]["other_crops"]["paths"].keys()
+            self.cfg["food_production"]["other_crops"]["paths"].keys(),
         )
+        for food_type in food_types:
+            pass
 
     def get_road_density(self, geometry: gpd.GeoDataFrame):
         pass

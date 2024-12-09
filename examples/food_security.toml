@@ -40,13 +40,9 @@ maize = "C:/Users/jong/Projects/Food-Security-data/other_crops/E06.27.csv"
 path = ""
 file_type = "vector"
 
-[food_supply.import]
-path = ""
-file_type = "table"
-
-[food_supply.export]
+[food_supply.import_export]
 path = "C:/Users/jong/Projects/Food-Security-data/import_export/FAOSTAT_data_import_export_11-18-2024.csv"
-file_type = "table"
+
 
 [food_transfer_coefficient.GDP_per_capita_per_area]
 path = "" 
