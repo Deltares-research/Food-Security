@@ -15,6 +15,7 @@ class FoodSupply(FSBase):
 
     def __init__(self, cfg: dict):
         self.eximport_df = pd.read_csv(self.cfg["food_supply"]["export"]["path"])
+        self.total_production_FAO = pd.read_csv(self.cfg["food_supply"]["total_production_FAO"]["path"])
         super().__init__(cfg=cfg)
 
     def get_import(self):
@@ -53,3 +54,14 @@ class FoodSupply(FSBase):
         region: gpd.GeoDataFrame,
     ) -> gpd.GeoDataFrame:
         food_supply_region = self.calculate_food_supply_for_region(geometry=region)
+
+    def _calculate_export_ratio(self, food_items):
+        pass
+
+    @property
+    def total_production_FAO(self) -> pd.DataFrame:  # noqa: N802
+        return self._total_production_FAO
+
+    @total_production_FAO.setter
+    def total_production_FAO(self, df: pd.DataFrame):  # noqa: N802
+        return df[df["Area"] == self.cfg["main"]["country"]]
