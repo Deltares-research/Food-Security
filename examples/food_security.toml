@@ -46,6 +46,9 @@ path = "C:/Users/jong/Projects/Food-Security-data/import_export/FAOSTAT_data_imp
 [food_supply.total_production_FAO]
 path = "C:/Users/jong/Projects/Food-Security-data/FOA_STAT_food_production.csv"
 
+[food_supply.FAO_item_mapping]
+path = "C:/Users/jong/Projects/Food-Security/data/FAO_item_mapping.csv"
+
 [food_transfer_coefficient.GDP_per_capita_per_area]
 path = "" 
 file_type = "grid"

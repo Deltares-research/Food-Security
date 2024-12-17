@@ -13,7 +13,8 @@ logger = logging.getLogger(__name__)
 class FoodSupply(FSBase):
     """Calculate the total food supply based on import and export and food production."""
 
-    def __init__(self, cfg: dict):
+    def __init__(self, cfg: dict, region: gpd.GeoDataFrame) -> None:
+        self.region = region
         self.eximport_df = pd.read_csv(self.cfg["food_supply"]["export"]["path"])
         self.total_production_FAO = pd.read_csv(self.cfg["food_supply"]["total_production_FAO"]["path"])
         super().__init__(cfg=cfg)
