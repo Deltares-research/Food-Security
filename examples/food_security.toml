@@ -40,11 +40,6 @@ maize = "C:/Users/jong/Projects/Food-Security-data/other_crops/E06.27.csv"
 path = ""
 file_type = "vector"
 
-[food_supply.import_export_table]
-path = "C:/Users/jong/Projects/Food-Security-data/import_export/FAOSTAT_data_import_export_11-18-2024.csv"
-
-[food_supply.total_production_FAO]
-path = "C:/Users/jong/Projects/Food-Security-data/FOA_STAT_food_production.csv"
 
 [food_supply.FAO_item_mapping]
 path = "C:/Users/jong/Projects/Food-Security/data/FAO_item_mapping.csv"
