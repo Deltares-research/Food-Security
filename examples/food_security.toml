@@ -16,6 +16,9 @@ path = "C:/Users/jong/Projects/Food-Security-data/rice_yield/RIB_CULT_prod.his"
 [food_production.aqua_culture]
 path = ""
 
+[food_production.other_crops]
+path = ""
+
 [food_security_data_table]
 path = ""
 # column names
