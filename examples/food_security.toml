@@ -3,6 +3,9 @@ year = 2016
 output_path = "./output"
 country = "Viet Nam"
 
+study_area = 0
+country_area = 0
+country_gdp = 0
 
 [area.region]
 path = ""
@@ -10,30 +13,23 @@ path = ""
 [area.provinces]
 path = ""
 
-[food_production.rice_yield]
-path = "C:/Users/jong/Projects/Food-Security-data/rice_yield/RIB_CULT_prod.his"
-
-[food_production.aqua_culture]
-path = ""
+[food_production.modelled_crops]
+rice = "C:/Users/jong/Projects/Food-Security-data/rice_yield/RIB_CULT_prod.his"
 
 [food_production.other_crops]
+# If not given crop data is pulled from FAO
 path = ""
+region_column = "" 
+
+[food_production.fao]
+conversion_table = ""
+
 
 [food_security_data_table]
 path = ""
-# column names
-region = "name"
-gdp ="gdp"
-population = "population"
-import_coefficient = "import_coeff"
-export_coefficient = "export_coeff"
 
-[trade.import]
+[food_value_table]
 path = ""
-
-[trade.export]
-path = ""
-
 
 [caloric_demand]
 demand = 2800
