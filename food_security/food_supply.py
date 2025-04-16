@@ -18,20 +18,21 @@ class FoodSupply(FSBase):
         super().__init__(cfg=cfg)
         self.region = region
         self.fs_data_table = pd.read_csv(
-            self.config["food_security_data_table"]["path"],
+           self.cfg["food_security_data_table"]["path"]
         )
+
 
     def add_food_supply(self) -> None:
         """Calculate food supply for regions."""
 
+
     def calculate_trade(self) -> gpd.GeoDataFrame:
-        fs_data_table_cfg = self.cfg["food_security_data_table"]
         trade_gdf = self.region.merge(
             self.fs_data_table,
-            on=self.cfg["food_security_data_table"]["region"],
+            on="region",
         )
         trade_gdf["imports"] = (
-            trade_gdf["rice_yield"] * trade_gdf[fs_data_table_cfg["import_coefficient"]]
+            trade_gdf["rice_yield"] * trade_gdf["import_coeff"]
         )
 
     def run(self) -> gpd.GeoDataFrame:
