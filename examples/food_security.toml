@@ -2,9 +2,7 @@
 year = 2016
 output_path = "./output"
 country = "Viet Nam"
-
-study_area = 0
-country_area = 0
+country_area = 0    # Country area should be in km2
 country_gdp = 0
 
 [area.region]

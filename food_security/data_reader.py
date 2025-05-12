@@ -40,7 +40,9 @@ class Grid:
         regions[col_name] = stat_list
         return regions
 
-    def get_region_stats(self, regions: gpd.GeoDataFrame, cols: dict) -> gpd.GeoDataFrame:
+    def get_region_stats(
+        self, regions: gpd.GeoDataFrame, cols: dict,
+    ) -> gpd.GeoDataFrame:
         for col, stat in cols.items():
             regions = self.get_region_stat(regions, col_name=col, stat=stat)
         return regions
@@ -69,7 +71,10 @@ def read_and_transform_rice_yield_table(file_path: str | Path, year: int) -> Non
         logger.warning("No rice data found for year %s", year)
         return None
     rice_yield = rice_yield_df[rice_yield_df["GMT"] == date].to_numpy()[0][1:]
-    data = [{"Name": region, "rice_yield": rice} for region, rice in zip(regions, rice_yield)]
+    data = [
+        {"Name": region, "rice_yield": rice}
+        for region, rice in zip(regions, rice_yield)
+    ]
     return pd.DataFrame(data=data)
 
 
@@ -89,8 +94,9 @@ class HisFile:
         "182": "Ben Tre",
     }
 
-    def __init__(self, file_path: str | Path):
+    def __init__(self, file_path: str | Path, crop: str):
         self.file_path = file_path
+        self.crop = crop
 
     def read(self, *, hia: bool = False) -> None:
         """Read a hisfile to a xarray.Dataset.
@@ -120,8 +126,10 @@ class HisFile:
             params = []
             for _ in range(noout):
                 param = (f.read(20).rstrip().lstrip()).decode("utf-8")
-                if (count := params.count(param)) > 0:  # Checks if there are duplicate data var names and adds a suffix
-                    param += f"_{count+1}"
+                if (
+                    count := params.count(param)
+                ) > 0:  # Checks if there are duplicate data var names and adds a suffix
+                    param += f"_{count + 1}"
                 params.append(param)
 
             locnrs, locs = [], []
@@ -146,7 +154,10 @@ class HisFile:
                 params = self._update_long(params, config, "Long Parameters")
 
         self.ds = xr.Dataset(
-            {param: (["time", "station"], data[i, ...]) for (i, param) in enumerate(params)},
+            {
+                param: (["time", "station"], data[i, ...])
+                for (i, param) in enumerate(params)
+            },
             coords={
                 "time": dates,
                 "station": locs,
@@ -179,12 +190,12 @@ class HisFile:
                 if len(i) < 3:  # noqa: PLR2004
                     i = "_" + i  # noqa: PLW2901
 
-                key = f"Nd_____{i} / Cr__{x+1} /"
+                key = f"Nd_____{i} / Cr__{x + 1} /"
                 if key not in self.ds.station:
                     continue
                 keys.append(key)
             total_yield = self.ds.sel(station=keys, time=time)[param].to_numpy().sum()
-            row = {"region": region, "rice_yield": total_yield}
+            row = {"region": region, self.crop: total_yield}
             data.append(row)
         return pd.DataFrame(data)
 

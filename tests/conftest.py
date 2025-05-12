@@ -25,11 +25,6 @@ def regions():
 
 
 @pytest.fixture
-def grid_file():
-    return TEST_DATA_DIR / "test_lifestock.tif"
-
-
-@pytest.fixture
 def example_config() -> dict:
     cfg_file = Path(__file__).parent.parent / "examples/food_security.toml"
     return ConfigReader(cfg_file)
@@ -38,3 +33,7 @@ def example_config() -> dict:
 @pytest.fixture
 def his_file():
     return TEST_DATA_DIR / "RIB_CULT_prod.his"
+
+@pytest.fixture
+def conversion_table():
+    return DATA_DIR / "conversion_table.csv"
