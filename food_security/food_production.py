@@ -48,7 +48,7 @@ class FoodProduction(FSBase):
 
     def add_other_crops(self) -> None:
         """Add other crop production."""
-        if Path(self.cfg["food_production"]["other_crops"]["path"]).exists():
+        if Path(self.cfg["food_production"]["other_crops"]["path"]).is_file():
             logger.info("Adding other crop data from file")
             other_crops = pd.read_csv(
                 self.cfg["food_production"]["other_crops"]["path"],
@@ -73,9 +73,16 @@ class FoodProduction(FSBase):
             self.region["land_ratio"] = (
                 self.region["area"] / self.cfg["main"]["country_area"]
             )
+
+            # Set crop and production result to float
+            other_crops["Value"] = other_crops["Value"].astype(float)
+
             for _, row in other_crops.iterrows():
+                # Iterrate over available other crop production data and attach
+                # to region dataframe
                 col_name = f"{row['ITEM Nutrition']}_{row['Item Code']}"
-                self.region[col_name] = row["Value"] * self.region["land_ratio"]
+                self.region[col_name] = self.region["land_ratio"] * row["Value"]
+                self.region[col_name] = self.region[col_name].round(2)
 
     def fetch_foastat_production_data(self) -> pd.DataFrame:
         """Fetch the crop and livestock data of the FAO."""
@@ -95,8 +102,10 @@ class FoodProduction(FSBase):
             conversion_table["Item Code"].isin(rice_codes)
         ].index
         conversion_table = conversion_table.drop(index=drop_index)
+        return prod_data.merge(conversion_table, on="Item Code", how="inner").dropna()
 
-        return prod_data.merge(conversion_table, on="Item Code", how="inner")
+
+
 
     def calculate_region_area(self) -> None:
         """Calculate the area of the region in square meters."""

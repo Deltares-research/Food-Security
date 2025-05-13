@@ -1,10 +1,8 @@
 import logging
+
 import geopandas as gpd
 
 from food_security.food_production import FoodProduction
-
-
-
 
 
 def test_FoodProduction(regions: gpd.GeoDataFrame, his_file, conversion_table, caplog):
@@ -14,6 +12,7 @@ def test_FoodProduction(regions: gpd.GeoDataFrame, his_file, conversion_table, c
         "food_production": {
             "modelled_crops": {"rice": his_file},
             "fao": {"conversion_table": conversion_table},
+            "other_crops": {"path": ""},
         },
     }
     fp = FoodProduction(cfg=cfg, region=regions)
@@ -23,4 +22,5 @@ def test_FoodProduction(regions: gpd.GeoDataFrame, his_file, conversion_table, c
     assert "Adding modelled rice production to regions" in caplog.text
 
     fp.add_other_crops()
-
+    assert len(fp.region.columns) == 74
+    assert "No other crop file found. Pulling other crop data from FAO" in caplog.text
