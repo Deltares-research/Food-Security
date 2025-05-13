@@ -9,9 +9,10 @@ def get_food_production_df(country_name: str, year: int) -> pd.DataFrame:
     return _get_fao_df("QCL", pars=pars, coding=coding)
 
 
-def get_food_export_df(country_name: str, year: int) -> pd.DataFrame:
+
+def get_trade_matrix_df(country_name: str, year: int) -> pd.DataFrame:
     area_code = faostat.get_par("TM", "reporterarea")[country_name]
-    pars = {"reporterarea": area_code, "element": "2910", "year": str(year)}  # element is the export quantity code
+    pars = {"reporterarea": area_code, "element": ["2910", "2610"], "year": str(year)}  # element is the export quantity code
     coding = {"reporterarea": "FAO"}
     return _get_fao_df("TM", pars=pars, coding=coding)
 
@@ -21,4 +22,7 @@ def _get_fao_df(ds_code: str, pars: dict, coding: dict) -> pd.DataFrame:
     if fao_df.empty:
         err_msg = "No FAO data found for the given parameters."
         raise ValueError(err_msg)
+    
+    # Cast Value from str to float
+    fao_df["Value"] = fao_df["Value"].astype(float)
     return fao_df

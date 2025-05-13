@@ -83,6 +83,7 @@ class FoodProduction(FSBase):
                 col_name = f"{row['ITEM Nutrition']}_{row['Item Code']}"
                 self.region[col_name] = self.region["land_ratio"] * row["Value"]
                 self.region[col_name] = self.region[col_name].round(2)
+            
 
     def fetch_foastat_production_data(self) -> pd.DataFrame:
         """Fetch the crop and livestock data of the FAO."""
