@@ -8,3 +8,4 @@ def test_FoodSupply(food_production_data):
     fs = FoodSupply(cfg=cfg, region=food_production_data)
 
     fs.get_food_trade_fluxes()
+    assert fs

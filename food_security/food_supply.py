@@ -73,8 +73,17 @@ class FoodSupply(FSBase):
         total_trade["trade_flux"] = total_trade["import"] - total_trade["export"]
         local_trade = self.region[["Name", "land_ratio"]]
 
-        for row in total_trade.iterrows():
+        trade_flux  = total_trade[["Item Code", "trade_flux"]]
+        for _,row in local_trade.iterrows():
+            local_trade_flux = trade_flux.copy()            
+            local_trade_flux["trade_flux"] = trade_flux["trade_flux"] * row["land_ratio"]
+        
+
+    def _calculate_trade_fluxes(self, local_trade_flux: pd.DataFrame, region_name: str):
+        for _, rows in local_trade_flux.iterrows():
             pass
+            # Match the trade flux with the item in the regions gdf and add the flux to the amount
+
 
     def get_food_items(self) -> list[tuple]:
         data_cols = self.region.columns
