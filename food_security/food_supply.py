@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class FoodSupply(FSBase):
-    """Calculate the total food supply based on import and export and food production."""
+    """Calculate the total food supply based on trade and food production."""
 
     def __init__(self, cfg: dict, region: gpd.GeoDataFrame) -> None:
         """Instantiate a FoodSupply object."""
@@ -22,9 +22,14 @@ class FoodSupply(FSBase):
 
     def add_food_supply(self) -> None:
         """Calculate food supply for regions."""
+        trade_flux = self.get_food_trade_fluxes()
+        self.region = self.region.apply(
+            self._calculate_trade_fluxes, axis=1, args=(trade_flux,),
+        )
 
     def get_food_trade_fluxes(self) -> pd.DataFrame:
-        food_items = self.get_food_items()
+        """Retrieve import and export of food items and calculate the flux."""
+        food_items = self.get_food_items
         trade_matrix_df = get_trade_matrix_df(
             country_name=self.cfg["main"]["country"],
             year=self.cfg["main"]["year"],
@@ -71,21 +76,31 @@ class FoodSupply(FSBase):
 
         # calculate trade fluxes
         total_trade["trade_flux"] = total_trade["import"] - total_trade["export"]
-        local_trade = self.region[["Name", "land_ratio"]]
 
-        trade_flux  = total_trade[["Item Code", "trade_flux"]]
-        for _,row in local_trade.iterrows():
-            local_trade_flux = trade_flux.copy()            
-            local_trade_flux["trade_flux"] = trade_flux["trade_flux"] * row["land_ratio"]
-        
+        return total_trade[["Item Code", "trade_flux"]]
 
-    def _calculate_trade_fluxes(self, local_trade_flux: pd.DataFrame, region_name: str):
-        for _, rows in local_trade_flux.iterrows():
-            pass
-            # Match the trade flux with the item in the regions gdf and add the flux to the amount
+    @staticmethod
+    def _calculate_trade_fluxes(row: pd.Series, trade_flux: pd.DataFrame) -> pd.Series:
+        # Use regex pattern to check if col is <item>_<item code> col
+        pattern = re.compile(r"^[A-Z ,/]+_[0-9]+$")
+        for col in row.index:
+            if pattern.match(col):
+                item_code = col.split("_")[-1]
+                # If item is in trade flux df calculate the supply of that item
+                # based on the land ratio and the trade flux
+                if item_code in trade_flux["Item Code"].to_numpy():
+                    row[col] = row[col] + (
+                        trade_flux.loc[
+                            trade_flux["Item Code"] == item_code,
+                            "trade_flux",
+                        ].to_numpy()[0]
+                        * row["land_ratio"]
+                    )
+        return row
 
-
+    @property
     def get_food_items(self) -> list[tuple]:
+        """Return food item with item code from dataframe."""
         data_cols = self.region.columns
         pattern = re.compile(r"^[A-Z ,/]+_[0-9]+$")
         other_food_cols = [name for name in data_cols if pattern.match(name)]
