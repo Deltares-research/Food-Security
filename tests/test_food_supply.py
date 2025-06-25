@@ -1,22 +1,15 @@
-import pytest
-
 from food_security.food_supply import FoodSupply
 
 
-@pytest.mark.local
-def test_FoodSupply_with_data(example_config: dict):
-    fs = FoodSupply(cfg=example_config)
-    fs.get_export()
-
-
-def test_FoodSupply_get_export(data_dir):
-    cfg = {"food_supply": {"import_export_table": {"path": data_dir / "FAOSTAT_data_en_11-18-2024"}}}
-    fs = FoodSupply(cfg=cfg)
-    fs.get_export()
-
-
-@pytest.mark.local
-def test_FoodSupply_calculate_export_ratio(regions, example_config):
-    fs = FoodSupply(cfg=example_config, region=regions)
-    food_items = ["chicken", "buffalo", "sugar_cane"]
-    export_ratios = fs._calculate_export_ratio(food_items=food_items)
+def test_FoodSupply(food_production_data):
+    cfg = {"main": {"country": "Viet Nam", "year": 2016}}
+    region = food_production_data.copy(deep=True)
+    fs = FoodSupply(cfg=cfg, region=food_production_data)
+    food_items = fs.get_food_items
+    food_cols = [food_item[0] + "_" + food_item[1] for food_item in food_items]
+    trade_flux = fs.get_food_trade_fluxes()
+    changed_food_cols = trade_flux["Item Code"].to_numpy()
+    fs.add_food_supply()
+    for food_col in food_cols:
+        if any(food_col.endswith(c) for c in changed_food_cols):
+            assert not fs.region[food_col].equals(region[food_col])
