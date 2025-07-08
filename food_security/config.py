@@ -37,6 +37,6 @@ class ConfigReader(dict):
                 yield new_key, v
 
     @staticmethod
-    def flatten_dict(d: MutableMapping, parent_key: str = "", sep: str = "."):
+    def flatten_dict(d: MutableMapping, parent_key: str = "", sep: str = ".") -> dict:
         """Flatten a dictionary."""
         return dict(ConfigReader._flatten_dict_gen(d, parent_key, sep))

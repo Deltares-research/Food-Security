@@ -16,7 +16,7 @@ testpaths = ["tests"]
 select = ["ALL"]
 
 [tool.ruff]
-line-length = 120
+line-length = 88
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["D", "N802", "ANN201", "ANN001", "PD901", "S101", "PLR2004"]

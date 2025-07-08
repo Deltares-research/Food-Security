@@ -10,6 +10,8 @@ dependencies:
   - xarray
   - openpyxl
   - pytest
+  - osmnx
   - pip:
+      - foastat
       - tomli
       - rasterstats

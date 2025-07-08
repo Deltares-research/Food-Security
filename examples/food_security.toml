@@ -2,7 +2,8 @@
 year = 2016
 output_path = "./output"
 country = "Viet Nam"
-
+country_area = 0    # Country area should be in km2
+country_gdp = 0
 
 [area.region]
 path = ""
@@ -10,56 +11,24 @@ path = ""
 [area.provinces]
 path = ""
 
-[food_production.lifestock.paths]
-buffalo = "P:/wflow_global/hydromt/socio_economic/glw/5_Bf_2010_Da.tif"
-chicken = "P:/wflow_global/hydromt/socio_economic/glw/5_Ch_2010_Da.tif"
-cattle = "P:/wflow_global/hydromt/socio_economic/glw/5_Ct_2010_Da.tif"
-duck = "P:/wflow_global/hydromt/socio_economic/glw/5_Dk_2010_Da.tif"
-goat = "P:/wflow_global/hydromt/socio_economic/glw/5_Gt_2010_Da.tif"
-pig = "P:/wflow_global/hydromt/socio_economic/glw/5_Pg_2010_Da.tif"
-horse = "P:/wflow_global/hydromt/socio_economic/glw/5_Ho_2010_Da.tif"
-
-[food_production.rice_yield]
-path = "C:/Users/jong/Projects/Food-Security-data/rice_yield/RIB_CULT_prod.his"
+[food_production.modelled_crops]
+rice = "C:/Users/jong/Projects/Food-Security-data/rice_yield/RIB_CULT_prod.his"
 
 [food_production.other_crops]
-join_column = "provinces"
-
-[food_production.other_crops.paths]
-sea_fish = "C:/Users/jong/Projects/Food-Security-data/other_crops/E06.64.csv"
-oranges = "C:/Users/jong/Projects/Food-Security-data/other_crops/E06.40.csv"
-peanuts = "C:/Users/jong/Projects/Food-Security-data/other_crops/E06.35.csv"
-sugar_cane = "C:/Users/jong/Projects/Food-Security-data/other_crops/E06.33.csv"
-cassava = "C:/Users/jong/Projects/Food-Security-data/other_crops/E06.31.csv"
-sweet_potatoes = "C:/Users/jong/Projects/Food-Security-data/other_crops/E06.29.csv"
-maize = "C:/Users/jong/Projects/Food-Security-data/other_crops/E06.27.csv"
-
-
-
-[food_production.aqua_culture]
+# If not given crop data is pulled from FAO
 path = ""
-file_type = "vector"
+region_column = "" 
+
+[food_production.fao]
+conversion_table = ""
 
 
-[food_supply.FAO_item_mapping]
-path = "C:/Users/jong/Projects/Food-Security/data/FAO_item_mapping.csv"
-
-[food_transfer_coefficient.GDP_per_capita_per_area]
-path = "" 
-file_type = "grid"
-
-[food_transfer_coefficient.road_density]
+[food_security_data_table]
 path = ""
-file_type = "vector"
+
+[food_value_table]
+path = ""
 
 [caloric_demand]
 demand = 2800
-
-[caloric_demand.population]
-path = ""
-file_type = "grid"
-
-[nutritional_value_per_crop]
-path = ""
-file_type = "table"
 
