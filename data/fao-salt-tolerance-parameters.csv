@@ -1,0 +1,197 @@
+﻿Common name,Botanical name,Tolerance based on,Threshold (ECe) (dS/m),Slope (% per dS/m),Rating
+"Artichoke, Jerusalem",Helianthus tuberosus L.,Tuber yield,0.4,9.6,MS
+Barley,Hordeum vulgare L.,Grain yield,8.0,5.0,T
+Canola or rapeseed,Brassica campestris L. [syn. B. rapa L.],Seed yield,9.7,14,T
+Canola or rapeseed,B. napus L.,Seed yield,11.0,13,T
+Chickpea,Cicer arietinum L.,Seed yield,-,-,MS
+Corn,Zea mays L.,Ear FW,1.7,12,MS
+Cotton,Gossypium hirsutum L.,Seed cotton yield,7.7,5.2,T
+Crambe,Crambe abyssinica Hochst. ex R.E. Fries,Seed yield,2.0,6.5,MS
+Flax,Linum usitatissimum L.,Seed yield,1.7,12,MS
+Guar,Cyamopsis tetragonoloba (L). Taub.,Seed yield,8.8,17,T
+Kenaf,Hibiscus cannabinus L.,Stem DW,8.1,11.6,T
+"Millet, channel",Echinochloa turnerana (Domin) J.M. Black,Grain yield,-,-,T
+Oats,Avena sativa L.,Grain yield,-,-,T
+Peanut,Arachis hypogaea L.,Seed yield,3.2,29,MS
+"Rice, paddy",Oryza sativa L.,Grain yield,3,12,S
+Roselle,Hibiscus sabdariffa L.,Stem DW,-,-,MT
+Rye,Secale cereale L.,Grain yield,11.4,10.8,T
+Safflower,Carthamus tinctorius L.,Seed yield,-,-,MT
+Sesame,Sesamum indicum L.,Pod DW,-,-,S
+Sorghum,Sorghum bicolor (L.) Moench,Grain yield,6.8,16,MT
+Soybean,Glycine max (L.) Merrrill,Seed yield,5.0,20,MT
+Sugar beet,Beta vulgaris L.,Storage root,7.0,5.9,T
+Sugar cane,Saccharum officinarum L.,Shoot DW,1.7,5.9,MS
+Sunflower,Helianthus annuus L.,Seed yield,4.8,5.0,MT
+Triticale,X Triticosecale Wittmack,Grain yield,6.1,2.5,T
+Wheat,Triticum aestivum L.,Grain yield,6.0,7.1,MT
+Wheat (semi-dwarf),T. aestivum L.,Grain yield,8.6,3.0,T
+"Wheat, Durum",T. turgidum L. var. durum Desf.,Grain yield,5.9,3.8,T
+Alfalfa,Medicago sativa L.,Shoot DW,2.0,7.3,MS
+"Alkaligrass, Nuttall",Puccinellia airoides (Nutt.) Wats. & Coult.,Shoot DW,-,-,T*
+Alkali sacaton,Sporobolus airoides Torr.,Shoot DW,-,-,T*
+Barley (forage),Hordeum vulgare L.,Shoot DW,6.0,7.1,MT
+"Bentgrass, creeping",Agrostis stolonifera L.,Shoot DW,-,-,MS
+Bermudagrass,Cynodon dactylon (L.) Pers.,Shoot DW,6.9,6.4,T
+"Bluestem, Angleton",Dichanthium aristatum (Poir.) C.E. Hubb. [syn. Andropogon nodosus (Willem.) Nash],Shoot DW,-,-,MS*
+Broad bean,Vicia faba L.,Shoot DW,1.6,9.6,MS
+"Brome, mountain",Bromus marginatus Nees ex Steud.,Shoot DW,-,-,MT*
+"Brome, smooth",B. inermis Leyss,Shoot DW,-,-,MT
+Buffelgrass,Pennisetum ciliare (L). Link. [syn. Cenchrus ciliaris],Shoot DW,-,-,MS*
+Burnet,Poterium sanguisorba L.,Shoot DW,-,-,MS*
+"Canarygrass, reed",Phalaris arundinacea L.,Shoot DW,-,-,MT
+"Clover, alsike",Trifolium hybridum L.,Shoot DW,1.5,12,MS
+"Clover, Berseem",T. alexandrinum L.,Shoot DW,1.5,5.7,MS
+"Clover, Hubam",Melilotus alba Dest. var. annua H.S.Coe,Shoot DW,-,-,MT*
+"Clover, ladino",Trifolium repens L.,Shoot DW,1.5,12,MS
+"Clover, Persian",T. resupinatum L.,Shoot DW,-,-,MS*
+"Clover, red",T. pratense L.,Shoot DW,1.5,12,MS
+"Clover, strawberry",T. fragiferum L.,Shoot DW,1.5,12,MS
+"Clover, sweet",Melilotus sp. Mill.,Shoot DW,-,-,MT*
+"Clover, white Dutch",Trifolium repens L.,Shoot DW,-,-,MS*
+Corn (forage),Zea mays L.,Shoot DW,1.8,7.4,MS
+Cowpea (forage),Vigna unguiculata (L.) Walp.,Shoot DW,2.5,11,MS
+Dallisgrass,Paspalum dilatatum Poir.,Shoot DW,-,-,MS*
+Dhaincha,Sesbania bispinosa (Linn.) W.F. Wight [syn. Sesbania aculeata (Willd.) Poir],Shoot DW,-,-,MT
+"Fescue, tall",Festuca elatior L.,Shoot DW,3.9,5.3,MT
+"Fescue, meadow",Festuca pratensis Huds.,Shoot DW,-,-,MT*
+"Foxtail, meadow",Alopecurus pratensis L.,Shoot DW,1.5,9.6,MS
+Glycine,Neonotonia wightii [syn. Glycine wightii or javanica],Shoot DW,-,-,MS
+"Gram, black or Urd bean",Vigna mungo (L.) Hepper [syn. Phaseolus mungo L.],Shoot DW,-,-,S
+"Grama, blue",Bouteloua gracilis (HBK) Lag. ex Steud.,Shoot DW,-,-,MS*
+Guinea grass,Panicum maximum Jacq.,Shoot DW,-,-,MT
+Hardinggrass,Phalaris tuberosa L. var. stenoptera (Hack) A. S. Hitchc.,Shoot DW,4.6,7.6,MT
+Kallargrass,Leptochloa fusca (L.) Kunth [syn. Diplachne fusca Beauv.],Shoot DW,-,-,T
+Lablab bean,Lablab purpureus (L.) Sweet [syn. Dolichos lablab L.],Shoot DW,-,-,MS
+Lovegrass,Eragrostis sp. N. M. Wolf,Shoot DW,2.0,8.4,MS
+"Milkvetch, Cicer",Astragalus cicer L.,Shoot DW,-,-,MS*
+"Millet, Foxtail",Setaria italica (L.) Beauvois,Dry matter,-,-,MS
+"Oatgrass, tall",Arrhenatherum elatius (L.) Beauvois ex J. Presl & K. Presl,Shoot DW,-,-,MS*
+Oats (forage),Avena sativa L.,Straw DW,-,-,T
+Orchardgrass,Dactylis glomerata L.,Shoot DW,1.5,6.2,MS
+"Panicgrass, blue",Panicum antidotale Retz.,Shoot DW,-,-,MS*
+Pigeon pea,Cajanus cajan (L.) Huth [syn. C. indicus (K.) Spreng.],Shoot DW,-,-,S
+Rape (forage),Brassica napus L.,,-,-,MT*
+Rescuegrass,Bromus unioloides HBK,Shoot DW,-,-,MT*
+Rhodesgrass,Chloris Gayana Kunth.,Shoot DW,-,-,MT
+Rye (forage),Secale cereale L.,Shoot DW,7.6,4.9,T
+"Ryegrass, Italian",Lolium multiflorum Lam.,Shoot DW,-,-,MT*
+"Ryegrass, perennial",Lolium perenne L.,Shoot DW,5.6,7.6,MT
+"Ryegrass, Wimmera",L. rigidum Gaud.,,-,-,MT*
+"Saltgrass, desert",Distichlis spicta L. var. stricta (Torr.) Bettle,Shoot DW,-,-,T*
+Sesbania,Sesbania exaltata (Raf.) V.L. Cory,Shoot DW,2.3,7.0,MS
+Sirato,Macroptilium atropurpureum (DC.) Urb.,Shoot DW,-,-,MS
+Sphaerophysa,Sphaerophysa salsula (Pall.) DC,Shoot DW,2.2,7.0,MS
+Sudangrass,Sorghum sudanense (Piper) Stapf,Shoot DW,2.8,4.3,MT
+Timothy,Phleum pratense L.,Shoot DW,-,-,MS*
+"Trefoil, big",Lotus pedunculatus Cav.,Shoot DW,2.3,19,MS
+"Trefoil, narrowleaf birdsfoot",L. corniculatus var tenuifolium L.,Shoot DW,5.0,10,MT
+"Trefoil, broadleaf birdsfoot",L. corniculatus L. var arvenis (Schkuhr) Ser. ex DC,Shoot DW,-,-,MS
+"Vetch, common",Vicia angustifolia L.,Shoot DW,3.0,11,MS
+Wheat (forage),Triticum aestivum L.,Shoot DW,4.5,2.6,MT
+"Wheat, Durum (forage)",T. turgidum L. var durum Desf.,Shoot DW,2.1,2.5,MT
+"Wheatgrass, standard crested",Agropyron sibiricum (Willd.) Beauvois,Shoot DW,3.5,4.0,MT
+"Wheatgrass, fairway crested",A. cristatum (L.) Gaertn.,Shoot DW,7.5,6.9,T
+"Wheatgrass, intermediate",A. intermedium (Host) Beauvois,Shoot DW,-,-,MT*
+"Wheatgrass, slender",A. trachycaulum (Link) Malte,Shoot DW,-,-,MT
+"Wheatgrass, tall",A. elongatum (Hort) Beauvois,Shoot DW,7.5,4.2,T
+"Wheatgrass, western",A. smithii Rydb.,Shoot DW,-,-,MT*
+"Wildrye, Altai",Elymus angustus Trin.,Shoot DW,-,-,T
+"Wildrye, beardless",E. triticoides Buckl.,Shoot DW,2.7,6.0,MT
+"Wildrye, Canadian",E. canadensis L.,Shoot DW,-,-,MT*
+"Wildrye, Russian",E. junceus Fisch.,Shoot DW,-,-,T
+Artichoke,Cynara scolymus L.,Bud yield,6.1,11.5,MT
+Asparagus,Asparagus officinalis L.,Spear yield,4.1,2.0,T
+"Bean, common",Phaseolus vulgaris L.,Seed yield,1.0,19,S
+"Bean, lima",P. lunatus L.,Seed yield,-,-,MT*
+"Bean, mung",Vigna radiata (L.) R. Wilcz.,Seed yield,1.8,20.7,S
+Cassava,Manihot esculenta Crantz,Tuber yield,-,-,MS
+"Beet, red",Beta vulgaris L.,Storage root,4.0,9.0,MT
+Broccoli,Brassica oleracea L. (Botrytis Group),Shoot FW,2.8,9.2,MS
+Brussels sprouts,B. oleracea L. (Gemmifera Group),,-,-,MS*
+Cabbage,B. oleracea L. (Capitata Group),Head FW,1.8,9.7,MS
+Carrot,Daucus carota L.,Storage root,1.0,14,S
+Cauliflower,Brassica oleracea L. (Botrytis Group),,-,-,MS*
+Celery,Apium graveolens L. var dulce (Mill.) Pers.,Petiole FW,1.8,6.2,MS
+"Corn, sweet",Zea mays L.,Ear FW,1.7,12,MS
+Cowpea,Vigna unguiculata (L.) Walp.,Seed yield,4.9,12,MT
+Cucumber,Cucumis sativus L.,Fruit yield,2.5,13,MS
+Eggplant,Solanum melongena L. var esculentum Nees.,Fruit yield,1.1,6.9,MS
+Garlic,Allium sativum L.,Bulb yield,3.9,14.3,MS
+"Gram, black or Urd bean",Vigna mungo (L.) Hepper [syn. Phaseolus mungo L.],Shoot DW,-,-,S
+Kale,Brassica oleracea L. (Acephala Group),,-,-,MS*
+Kohlrabi,Brassica oleracea L. (Gongylodes Group),,-,-,MS*
+Lettuce,Lactuca sativa L.,Top FW,1.3,13,MS
+Muskmelon,Cucumis melo L. (Reticulatus Group),Fruit yield,1.0,8.4,MS
+Okra,Abelmoschus esculentus (L.) Moench,Pod yield,-,-,MS
+Onion (bulb),Allium cepa L.,Bulb yield,1.2,16,S
+Onion (seed),,Seed yield,1.0,8.0,MS
+Parsnip,Pastinaca sativa L.,,-,-,S*
+Pea,Pisum sativum L.,Seed FW,3.4,10.6,MS
+Pepper,Capsicum annuum L.,Fruit yield,1.5,14,MS
+Pigeon pea,Cajanus cajan (L.) Huth [syn. C. indicus (K.) Spreng.],Shoot DW,-,-,S
+Potato,Solanum tuberosum L.,Tuber yield,1.7,12,MS
+Pumpkin,Cucurbita pepo L. var Pepo,,-,-,MS*
+Purslane,Portulaca oleracea L.,Shoot FW,6.3,9.6,MT
+Radish,Raphanus sativus L.,Storage root,1.2,13,MS
+Spinach,Spinacia oleracea L.,Top FW,2.0,7.6,MS
+"Squash, scallop",Cucurbita pepo L. var melopepo (L.) Alef.,Fruit yield,3.2,16,MS
+"Squash, zucchini",C. pepo L. var melopepo (L.) Alef.,Fruit yield,4.9,10.5,MT
+Strawberry,Fragaria x Ananassa Duch.,Fruit yield,1.0,33,S
+Sweet potato,Ipomoea batatas (L.) Lam.,Fleshy root,1.5,11,MS
+Tepary bean,Phaseolus acutifolius Gray,,-,-,MS*
+Tomato,Lycopersicon lycopersicum (L.) Karst. ex Farw. [syn. Lycopersicon esculentum Mill.],Fruit yield,2.5,9.9,MS
+"Tomato, cherry",L. lycopersicum var. Cerasiforme (Dunal) Alef.,Fruit yield,1.7,9.1,MS
+Turnip Turnip (greens),Brassica rapa L. (Rapifera Group),Storage root Top FW,0.9 3.3,9.0 4.3,MS MT
+Watermelon,Citrullus lanatus (Thunb.) Matsum. & Nakai,Fruit yield,-,-,MS*
+Winged bean,Psophocarpus tetragonolobus L. DC,Shoot DW,-,-,MT
+Almond,Prunus duclis (Mill.) D.A. Webb,Shoot growth,1.5,19,S
+Apple,Malus sylvestris Mill.,,-,-,S
+Apricot,Prunus armeniaca L.,Shoot growth,1.6,24,S
+Avocado,Persea americana Mill.,Shoot growth,-,-,S
+Banana,Musa acuminata Colla,Fruit yield,-,-,S
+Blackberry,Rubus macropetalus Doug. ex Hook,Fruit yield,1.5,22,S
+Boysenberry,Rubus ursinus Cham. and Schlechtend,Fruit yield,1.5,22,S
+Castor seed,Ricinus communis L.,,-,-,MS*
+Cherimoya,Annona cherimola Mill.,Foliar injury,-,-,S
+"Cherry, sweet",Prunus avium L.,Foliar injury,-,-,S*
+"Cherry, sand","Prunus besseyi L., H. Baley","Foliar injury, stem growth",-,-,S*
+Coconut,Cocos nucifera L.,,-,-,MT*
+Currant,Ribes sp. L.,"Foliar injury, stem growth",-,-,S*
+Date-palm,Phoenix dactylifera L.,Fruit yield,4.0,3.6,T
+Fig,Ficus carica L.,Plant DW,-,-,MT*
+Gooseberry,Ribes sp. L.,,-,-,S*
+Grape,Vitis vinifera L.,Shoot growth,1.5,9.6,MS
+Grapefruit,Citrus x paradisi Macfady.,Fruit yield,1.2,13.5,S
+Guava,Psidium guajava L.,Shoot & root growth,4.7,9.8,MT
+Guayule,Parthenium argentatum A. Gray,Shoot DW Rubber yield,8.7 7.8,11.6 10.8,T T
+Jambolan plum,Syzygium cumini L.,Shoot growth,-,-,MT
+Jojoba,Simmondsia chinensis (Link) C. K. Schneid,Shoot growth,-,-,T
+"Jujube, Indian",Ziziphus mauritiana Lam.,Fruit yield,-,-,MT
+Lemon,Citrus limon (L.) Burm. f.,Fruit yield,1.5,12.8,S
+Lime,Citrus aurantiifolia (Christm.) Swingle,,-,-,S*
+Loquat,Eriobotrya japonica (Thunb). Lindl.,Foliar injury,-,-,S*
+Macadamia,Macadamia integrifolia Maiden & Betche,Seedling growth,-,-,MS*
+Mandarin orange; tangerine,Citrus reticulata Blanco,Shoot growth,-,-,S*
+Mango,Mangifera indica L.,Foliar injury,-,-,S
+Natal plum,Carissa grandiflora (E.H. Mey.) A. DC.,Shoot growth,-,-,T
+Olive,Olea europaea L.,"Seedling growth, Fruit yield",-,-,MT
+Orange,Citrus sinensis (L.) Osbeck,Fruit yield,1.3,13.1,S
+Papaya,Carica papaya L.,"Seedling growth, foliar injury",-,-,MS
+Passion fruit,Passiflora edulis Sims.,,-,-,S*
+Peach,Prunus persica (L.) Batsch,"Shoot growth, Fruit yield",1.7,21,S
+Pear,Pyrus communis L.,,-,-,S*
+Pecan,Carya illinoinensis (Wangenh.) C. Koch,"Nut yield, trunk growth",-,-,MS
+Persimmon,Diospyros virginiana L.,,-,-,S*
+Pineapple,Ananas comosus (L.) Merrill,Shoot DW,-,-,MT
+Pistachio,Pistacia vera L.,Shoot growth,-,-,MS
+Plum; Prune,Prunus domestica L.,Fruit yield,2.6,31,MS
+Pomegranate,Punica granatum L.,Shoot growth,-,-,MS
+"Popinac, white",Leucaena leucocephala (Lam.) de Wit [syn. Leucaena glauca Benth.],Shoot DW,-,-,MS
+Pummelo,Citrus maxima (Burm.),Foliar injury,-,-,S*
+Raspberry,Rubus idaeus L.,Fruit yield,-,-,S
+Rose apple,Syzygium jambos (L.) Alston,Foliar injury,-,-,S*
+"Sapote, white",Casimiroa edulis Llave,Foliar injury,-,-,S*
+Scarlet wisteria,Sesbania grandiflora,Shoot DW,-,-,MT
+Tamarugo,Prosopis tamarugo Phil.,Observation,-,-,T
+Walnut,Juglans spp.,Foliar injury,-,-,S*

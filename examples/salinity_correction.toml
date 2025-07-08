@@ -1,0 +1,41 @@
+[main]
+output_path = "./output"
+country = "Viet Nam"
+
+[salinity_correction.provinces]
+path = "/Users/hemert/data/food-security/provinces_area.shp"
+
+[salinity_correction.salinity_map]
+dir = "/Users/hemert/data/food-security/"
+filename = "vmd3d_{YEAR}_salinity_50_map.xyz"
+
+[salinity_correction.crop_production]
+path = "/Users/hemert/data/food-security/RIB_CULT_prod.his"
+
+[salinity_correction.salt_tolerance]
+path = "/Users/hemert/projects/food-security/Food-Security/data/fao-salt-tolerance-parameters.csv"
+
+[salinity_correction.mapping]
+path = "/Users/hemert/data/food-security/input_test.xlsx"
+
+[salinity_correction.crops]
+crops_to_correct = ["WinterSpring"]
+
+[salinity_correction.land_use.directories]
+"Rice, paddy" = "/Users/hemert/data/food-security/"
+
+[salinity_correction.land_use.filename]
+filename = "landuse_mask_rice_{YEAR}.tif"
+
+[salinity_correction.years]
+years = [2015, 2016]
+
+[salinity_correction.output]
+path = "/Users/hemert/data/food-security/corrected-yield.csv"
+
+[salinity_correction.crs]
+commune = "EPSG:4326"
+salinity = "EPSG:32648"
+
+
+
