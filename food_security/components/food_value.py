@@ -2,7 +2,7 @@
 
 import geopandas as gpd
 
-from food_security.base import FSBase
+from food_security.interface.base import FSBase
 
 
 class FoodValue(FSBase):

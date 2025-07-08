@@ -8,9 +8,9 @@ from typing import TYPE_CHECKING
 
 import pandas as pd
 
-from food_security.base import FSBase
 from food_security.data_reader import HisFile
 from food_security.fao_api import get_food_production_df
+from food_security.interface.base import FSBase
 from food_security.utils import _prep_conversion_table
 
 if TYPE_CHECKING:
@@ -83,7 +83,6 @@ class FoodProduction(FSBase):
                 col_name = f"{row['ITEM Nutrition']}_{row['Item Code']}"
                 self.region[col_name] = self.region["land_ratio"] * row["Value"]
                 self.region[col_name] = self.region[col_name].round(2)
-            
 
     def fetch_foastat_production_data(self) -> pd.DataFrame:
         """Fetch the crop and livestock data of the FAO."""
@@ -104,9 +103,6 @@ class FoodProduction(FSBase):
         ].index
         conversion_table = conversion_table.drop(index=drop_index)
         return prod_data.merge(conversion_table, on="Item Code", how="inner").dropna()
-
-
-
 
     def calculate_region_area(self) -> None:
         """Calculate the area of the region in square meters."""

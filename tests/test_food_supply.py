@@ -1,4 +1,4 @@
-from food_security.food_supply import FoodSupply
+from food_security.components.food_supply import FoodSupply
 
 
 def test_FoodSupply(food_production_data):
