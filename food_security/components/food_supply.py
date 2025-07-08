@@ -6,8 +6,8 @@ import re
 import geopandas as gpd
 import pandas as pd
 
-from food_security.base import FSBase
 from food_security.fao_api import get_trade_matrix_df
+from food_security.interface.base import FSBase
 
 logger = logging.getLogger(__name__)
 

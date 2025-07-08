@@ -3,7 +3,7 @@
 import geopandas as gpd
 import osmnx as ox
 
-from food_security.base import FSBase
+from food_security.interface.base import FSBase
 
 
 class FoodTransferCoefficient(FSBase):

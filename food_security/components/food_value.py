@@ -5,7 +5,7 @@ import re
 import geopandas as gpd
 import pandas as pd
 
-from food_security.base import FSBase
+from food_security.interface.base import FSBase
 from food_security.utils import _prep_conversion_table
 
 
