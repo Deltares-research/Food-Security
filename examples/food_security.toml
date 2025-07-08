@@ -11,8 +11,9 @@ path = ""
 [area.provinces]
 path = ""
 
-[food_production.modelled_crops]
-rice = "C:/Users/jong/Projects/Food-Security-data/rice_yield/RIB_CULT_prod.his"
+[food_production.modelled_crops.rice]
+path = "C:/Users/jong/Projects/Food-Security-data/rice_yield/RIB_CULT_prod.his"
+calories = 280 # Calories per 100 gram
 
 [food_production.other_crops]
 # If not given crop data is pulled from FAO
@@ -22,12 +23,6 @@ region_column = ""
 [food_production.fao]
 conversion_table = ""
 
-
-[food_security_data_table]
-path = ""
-
-[food_value_table]
-path = ""
 
 [caloric_demand]
 demand = 2800
