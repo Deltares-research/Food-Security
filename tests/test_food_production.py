@@ -2,7 +2,7 @@ import logging
 
 import geopandas as gpd
 
-from food_security.food_production import FoodProduction
+from food_security.components.food_production import FoodProduction
 
 
 def test_FoodProduction(regions: gpd.GeoDataFrame, his_file, conversion_table, caplog):

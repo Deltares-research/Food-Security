@@ -1,6 +1,6 @@
 import numpy as np
 
-from food_security.food_transfer_coefficient import FoodTransferCoefficient
+from food_security.components.food_transfer_coefficient import FoodTransferCoefficient
 
 
 def test_calculate_road_density(regions):

@@ -1,0 +1,1 @@
+"""Food security components module."""
