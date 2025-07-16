@@ -1,15 +1,11 @@
 [main]
 year = 2016
-output_path = "./output"
+output.path = "./output/results.csv"
 country = "Viet Nam"
 country_area = 0    # Country area should be in km2
-country_gdp = 0
+aoi.path = ""
 
-[area.region]
-path = ""
 
-[area.provinces]
-path = ""
 
 [food_production.modelled_crops.rice]
 path = "C:/Users/jong/Projects/Food-Security-data/rice_yield/RIB_CULT_prod.his"

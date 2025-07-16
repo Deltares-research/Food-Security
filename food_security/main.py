@@ -2,54 +2,55 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from pathlib import Path
 
 import geopandas as gpd
 
+from food_security.components import FoodProduction, FoodSupply, FoodValue
 from food_security.config import ConfigReader
-from food_security.food_production import FoodProduction
-from food_security.food_supply import FoodSupply
-from food_security.food_value import FoodValue
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 DEFAULT_CRS = "EPSG:4326"
 
 
 class FoodSecurity:
-    def __init__(self, cfg_path: Path | str) -> None:
+    """Run the food security components and calculate the food security."""
+
+    def __init__(
+        self,
+        cfg_path: Path | str,
+        output_path: Path | str | None = None,
+        root: Path | str | None = None,
+    ) -> None:
         """Instantiate a food security object."""
-        self.config = ConfigReader(cfg_path)
-        self.region = gpd.read_file(self.config["region"]["path"])
-        provinces = gpd.read_file(self.config["provinces"]["path"])
-        if provinces.crs != DEFAULT_CRS:
-            provinces = provinces.to_crs(DEFAULT_CRS)
-        self.provinces = provinces
+        self.config = ConfigReader(cfg_path, root=root)
+        self.aoi = gpd.read_file(self.config["main"]["aoi"]["path"])
+        self.output_path = output_path
 
     def run(self) -> None:
         """Run food security module."""
         # Calculate food production
-        food_production = FoodProduction(cfg=self.config)
-        provinces = food_production.run(region=self.provinces)
+        food_production = FoodProduction(cfg=self.config, region=self.aoi)
+        self.aoi = food_production.run()
 
         # Calculate food supply for the provinces
-        food_supply = FoodSupply(cfg=self.config)
-        provinces = food_supply.add_food_supply_per_province(
-            provinces=provinces,
-            region=self.region,
-        )
+        food_supply = FoodSupply(cfg=self.config, region=self.aoi)
+        self.aoi = food_supply.run()
 
         # Calculate food value and variety
-        food_value = FoodValue(cfg=self.cfg)
-        provinces = food_value.add_food_value(provinces=provinces)
+        food_value = FoodValue(cfg=self.config, region=self.aoi)
+        self.aoi = food_value.run()
 
         # Calculate food security per province
-        result = self._calculate_food_security(provinces=provinces)
+        result = self._calculate_food_security(region=self.aoi)
 
         # Write result to file
+        output_path = (
+            self.output_path
+            if self.output_path
+            else Path(self.config["main"]["output_path"])
+        )
+        output_path.parent.mkdir(exist_ok=True)
+        result.to_file(output_path)
 
-        result.to_file()
-
-    def _calculate_food_security(self, provinces: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-        pass
+    def _calculate_food_security(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+        return region

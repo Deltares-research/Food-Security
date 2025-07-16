@@ -6,9 +6,10 @@ import geopandas as gpd
 class FSBase:
     """Base class for food security classes."""
 
-    def __init__(self, cfg: dict) -> None:
+    def __init__(self, cfg: dict, region: gpd.GeoDataFrame) -> None:
         """Instantiate a FSBase object."""
         self.cfg = cfg
+        self.region = region
 
     def run(self) -> gpd.GeoDataFrame:
         """Run the add data methods of a FSbase object."""
@@ -16,3 +17,5 @@ class FSBase:
             if attr.startswith("add"):
                 method = getattr(self, attr)
                 method()
+        return self.region
+

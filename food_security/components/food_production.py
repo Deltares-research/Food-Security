@@ -22,23 +22,11 @@ logger = logging.getLogger(__name__)
 class FoodProduction(FSBase):
     """FoodProduction class that groups methods for calculating the food production."""
 
-    def __init__(self, cfg: dict, region: gpd.GeoDataFrame) -> None:
-        """Instatiate a FoodProduction object.
-
-        Args:
-            cfg (dict): config dict.
-            region (gpd.GeoDataFrame): GeoDataFrame containing regions with a Name
-            column and geometries.
-
-        """
-        self.region = region
-        super().__init__(cfg=cfg)
-
     def add_modelled_crops(self) -> None:
         """Add modeled crops to region GeoDataFrame."""
         for crop, file_path in self.cfg["food_production"]["modelled_crops"].items():
             logger.info("Parsing %s data from file", crop)
-            hisfile = HisFile(file_path, crop=crop)
+            hisfile = HisFile(file_path["path"], crop=crop)
             hisfile.read()
             crop_data = hisfile.to_table(year=self.cfg["main"]["year"])
             if not crop_data.empty:
@@ -91,7 +79,7 @@ class FoodProduction(FSBase):
             year=self.cfg["main"]["year"],
         )
         conversion_table = pd.read_csv(
-            self.cfg["food_production"]["fao"]["conversion_table"],
+            self.cfg["food_production"]["fao"]["conversion_table"]["path"],
         )
         # Prepare table for merge, removing duplicates and renaming code column
         conversion_table = _prep_conversion_table(conversion_table)
@@ -110,8 +98,3 @@ class FoodProduction(FSBase):
         gdf = self.region.copy()
         gdf = gdf.to_crs(utm)
         self.region["area"] = gdf.geometry.area
-
-    def run(self) -> gpd.GeoDataFrame:
-        """Run the food production methods for adding data to a GeoDataFrame."""
-        super().run()
-        return self.region

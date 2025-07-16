@@ -15,11 +15,6 @@ logger = logging.getLogger(__name__)
 class FoodSupply(FSBase):
     """Calculate the total food supply based on trade and food production."""
 
-    def __init__(self, cfg: dict, region: gpd.GeoDataFrame) -> None:
-        """Instantiate a FoodSupply object."""
-        super().__init__(cfg=cfg)
-        self.region = region
-
     def add_food_supply(self) -> None:
         """Calculate food supply for regions."""
         trade_flux = self.get_food_trade_fluxes()
@@ -105,8 +100,3 @@ class FoodSupply(FSBase):
         pattern = re.compile(r"^[A-Z ,/]+_[0-9]+$")
         other_food_cols = [name for name in data_cols if pattern.match(name)]
         return [(*col.split("_"),) for col in other_food_cols]
-
-    def run(self) -> gpd.GeoDataFrame:
-        """Run the food supply methods for adding data to the region GeoDataFrame."""
-        super().run()
-        return self.region
