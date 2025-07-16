@@ -10,35 +10,40 @@ TEST_DATA_DIR = Path(__file__).parent / "test_data"
 
 
 @pytest.fixture
-def data_dir():
+def data_dir() -> Path:
     return DATA_DIR
 
 
 @pytest.fixture
-def test_data_dir():
+def test_data_dir() -> Path:
     return TEST_DATA_DIR
 
 
 @pytest.fixture
-def regions():
-    return gpd.read_file(DATA_DIR / "provinces_area.gpkg")
+def regions(test_data_dir) -> gpd.GeoDataFrame:
+    return gpd.read_file(test_data_dir/ "aoi.gpkg")
 
 
 @pytest.fixture
-def example_config() -> dict:
-    cfg_file = Path(__file__).parent.parent / "examples/food_security.toml"
-    return ConfigReader(cfg_file)
-
-
-@pytest.fixture
-def his_file():
+def his_file() -> Path:
     return TEST_DATA_DIR / "RIB_CULT_prod.his"
 
-@pytest.fixture
-def conversion_table():
-    return DATA_DIR / "conversion_table.csv"
 
 @pytest.fixture
-def food_production_data():
+def conversion_table() -> Path:
+    return test_data_dir / "conversion_table.csv"
+
+
+@pytest.fixture
+def food_production_data() -> gpd.GeoDataFrame:
     return gpd.read_file(TEST_DATA_DIR / "food_production_results.fgb")
-    
+
+
+@pytest.fixture
+def config_toml_file(test_data_dir) -> Path:
+    return test_data_dir / "test_food_security.toml"
+
+
+@pytest.fixture
+def config_dict(config_toml_file) -> dict:
+    return ConfigReader(config_toml_file)

@@ -1,0 +1,24 @@
+[main]
+year = 2016
+output_path = "./output/results.csv"
+country = "Viet Nam"
+country_area = 331690    # Country area should be in km2
+aoi.path = "tests/test_data/aoi.gpkg"
+population.path = "tests/test_data/population.csv"
+
+
+[food_production.modelled_crops.rice]
+path = "tests/test_data/RIB_CULT_prod.his"
+calories = 280 # Calories per 100 gram
+
+[food_production.other_crops]
+# If not given crop data is pulled from FAO
+path = ""
+region_column = "" 
+
+[food_production.fao]
+conversion_table.path = "tests/test_data/conversion_table.csv"
+
+[caloric_demand]
+demand = 2800
+

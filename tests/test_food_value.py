@@ -1,20 +1,22 @@
 import geopandas as gpd
 import numpy as np
 
-from food_security.food_value import FoodValue
+from food_security.components import FoodValue
 
 
-def test_food_value(example_config, data_dir, test_data_dir):
-    region = gpd.read_file(test_data_dir / "food_production_results.fgb").iloc[[0]]
-    example_config["food_production"]["fao"]["conversion_table"] = (
-        data_dir / "conversion_table.csv"
-    )
-    fv = FoodValue(cfg=example_config, region=region)
+def test_food_value(config_dict, test_data_dir):
+    regions = gpd.read_file(test_data_dir / "food_production_results.fgb")
+    fv = FoodValue(cfg=config_dict, region=regions.iloc[[0]])
     rice = np.float64(fv.region["rice"].to_numpy()[0])
     fv.add_food_value()
     rice_calories = (
         rice
-        * example_config["food_production"]["modelled_crops"]["rice"]["calories"]
+        * config_dict["food_production"]["modelled_crops"]["rice"]["calories"]
         * 10000
     )
     assert fv.region["rice"].to_numpy()[0] == rice_calories
+    assert "population" in fv.region.columns
+    assert "total_cals" in fv.region.columns
+    assert "cal_per_capita_per_day" in fv.region.columns
+    assert not fv.region["total_cals"].isna().all()
+    assert not fv.region["cal_per_capita_per_day"].isna().all()
