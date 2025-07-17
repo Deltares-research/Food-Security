@@ -11,5 +11,5 @@ def test_food_security(config_toml_file, tmp_path):
     fs = FoodSecurity(cfg_path=config_toml_file, output_path=tmp_path, root=root)
     fs.run()
     gdf = gpd.read_file(tmp_path)
-    assert len(gdf.columns) == 77
+    assert len(gdf.columns) == 78
 

@@ -1,0 +1,97 @@
+,area_map_name,crop_name,crop_name_fao,salinity,yield,year,a,b,corrected_yield,comment
+0,An Giang,MUA (ha),"Rice, paddy",0.0,21718290.0,2015,0.0,0.0,21718290.0,No correction needed
+1,An Giang,MUA (ha),"Rice, paddy",0.0,21718290.0,2016,0.0,0.0,21718290.0,No correction needed
+2,An Giang,WinterSpring,"Rice, paddy",1.68384227368663e-40,1481646800.0,2015,3.0,12.0,1481646800.0,
+3,An Giang,WinterSpring,"Rice, paddy",4.982977804412539e-27,-0.0,2016,3.0,12.0,-0.0,
+4,An Giang,SummerAutumn,"Rice, paddy",0.0,1161671600.0,2015,0.0,0.0,1161671600.0,No correction needed
+5,An Giang,SummerAutumn,"Rice, paddy",0.0,1161671600.0,2016,0.0,0.0,1161671600.0,No correction needed
+6,An Giang,AutumnWinter,"Rice, paddy",0.0,897537340.0,2015,0.0,0.0,897537340.0,No correction needed
+7,An Giang,AutumnWinter,"Rice, paddy",0.0,897537340.0,2016,0.0,0.0,897537340.0,No correction needed
+8,Bac Lieu,MUA (ha),"Rice, paddy",0.0,156778300.0,2015,0.0,0.0,156778300.0,No correction needed
+9,Bac Lieu,MUA (ha),"Rice, paddy",0.0,156778300.0,2016,0.0,0.0,156778300.0,No correction needed
+10,Bac Lieu,WinterSpring,"Rice, paddy",6.999694505793741e-06,170405500.0,2015,3.0,12.0,170405500.0,
+11,Bac Lieu,WinterSpring,"Rice, paddy",1.2827305793762207,-0.0,2016,3.0,12.0,-0.0,
+12,Bac Lieu,SummerAutumn,"Rice, paddy",0.0,279699940.0,2015,0.0,0.0,279699940.0,No correction needed
+13,Bac Lieu,SummerAutumn,"Rice, paddy",0.0,0.0,2016,0.0,0.0,0.0,No correction needed
+14,Bac Lieu,AutumnWinter,"Rice, paddy",0.0,238663940.0,2015,0.0,0.0,238663940.0,No correction needed
+15,Bac Lieu,AutumnWinter,"Rice, paddy",0.0,238663940.0,2016,0.0,0.0,238663940.0,No correction needed
+16,Ben Tre,MUA (ha),"Rice, paddy",0.0,35980360.0,2015,0.0,0.0,35980360.0,No correction needed
+17,Ben Tre,MUA (ha),"Rice, paddy",0.0,35980360.0,2016,0.0,0.0,35980360.0,No correction needed
+18,Ben Tre,WinterSpring,"Rice, paddy",2.7742643252115506e-12,85142220.0,2015,3.0,12.0,85142220.0,
+19,Ben Tre,WinterSpring,"Rice, paddy",0.0,-0.0,2016,3.0,12.0,-0.0,
+20,Ben Tre,SummerAutumn,"Rice, paddy",0.0,51121670.0,2015,0.0,0.0,51121670.0,No correction needed
+21,Ben Tre,SummerAutumn,"Rice, paddy",0.0,8004712.0,2016,0.0,0.0,8004712.0,No correction needed
+22,Ben Tre,AutumnWinter,"Rice, paddy",0.0,80225270.0,2015,0.0,0.0,80225270.0,No correction needed
+23,Ben Tre,AutumnWinter,"Rice, paddy",0.0,80225270.0,2016,0.0,0.0,80225270.0,No correction needed
+24,Ca Mau,MUA (ha),"Rice, paddy",0.0,340915940.0,2015,0.0,0.0,340915940.0,No correction needed
+25,Ca Mau,MUA (ha),"Rice, paddy",0.0,340915940.0,2016,0.0,0.0,340915940.0,No correction needed
+26,Ca Mau,WinterSpring,"Rice, paddy",17.122697830200195,0.0,2015,3.0,12.0,0.0,
+27,Ca Mau,WinterSpring,"Rice, paddy",28.685585021972656,-0.0,2016,3.0,12.0,-0.0,
+28,Ca Mau,SummerAutumn,"Rice, paddy",0.0,148198460.0,2015,0.0,0.0,148198460.0,No correction needed
+29,Ca Mau,SummerAutumn,"Rice, paddy",0.0,0.0,2016,0.0,0.0,0.0,No correction needed
+30,Ca Mau,AutumnWinter,"Rice, paddy",0.0,0.0,2015,0.0,0.0,0.0,No correction needed
+31,Ca Mau,AutumnWinter,"Rice, paddy",0.0,0.0,2016,0.0,0.0,0.0,No correction needed
+32,Can Tho,MUA (ha),"Rice, paddy",0.0,0.0,2015,0.0,0.0,0.0,No correction needed
+33,Can Tho,MUA (ha),"Rice, paddy",0.0,0.0,2016,0.0,0.0,0.0,No correction needed
+34,Can Tho,WinterSpring,"Rice, paddy",2.1396411101857807e-20,524588640.0,2015,3.0,12.0,524588640.0,
+35,Can Tho,WinterSpring,"Rice, paddy",7.877068443319039e-15,-0.0,2016,3.0,12.0,-0.0,
+36,Can Tho,SummerAutumn,"Rice, paddy",0.0,374993000.0,2015,0.0,0.0,374993000.0,No correction needed
+37,Can Tho,SummerAutumn,"Rice, paddy",0.0,374993000.0,2016,0.0,0.0,374993000.0,No correction needed
+38,Can Tho,AutumnWinter,"Rice, paddy",0.0,348983230.0,2015,0.0,0.0,348983230.0,No correction needed
+39,Can Tho,AutumnWinter,"Rice, paddy",0.0,348983230.0,2016,0.0,0.0,348983230.0,No correction needed
+40,Dong Thap,MUA (ha),"Rice, paddy",0.0,0.0,2015,0.0,0.0,0.0,No correction needed
+41,Dong Thap,MUA (ha),"Rice, paddy",0.0,0.0,2016,0.0,0.0,0.0,No correction needed
+42,Dong Thap,WinterSpring,"Rice, paddy",2.6226309417606385e-25,1222533400.0,2015,3.0,12.0,1222533400.0,
+43,Dong Thap,WinterSpring,"Rice, paddy",1.2076671856552784e-13,-0.0,2016,3.0,12.0,-0.0,
+44,Dong Thap,SummerAutumn,"Rice, paddy",0.0,1005417660.0,2015,0.0,0.0,1005417660.0,No correction needed
+45,Dong Thap,SummerAutumn,"Rice, paddy",0.0,1005417660.0,2016,0.0,0.0,1005417660.0,No correction needed
+46,Dong Thap,AutumnWinter,"Rice, paddy",0.0,738388600.0,2015,0.0,0.0,738388600.0,No correction needed
+47,Dong Thap,AutumnWinter,"Rice, paddy",0.0,738388600.0,2016,0.0,0.0,738388600.0,No correction needed
+48,Hau Giang,MUA (ha),"Rice, paddy",0.0,0.0,2015,0.0,0.0,0.0,No correction needed
+49,Hau Giang,MUA (ha),"Rice, paddy",0.0,0.0,2016,0.0,0.0,0.0,No correction needed
+50,Hau Giang,WinterSpring,"Rice, paddy",0.04408621788024902,268622530.0,2015,3.0,12.0,268622530.0,
+51,Hau Giang,WinterSpring,"Rice, paddy",0.3860609233379364,-0.0,2016,3.0,12.0,-0.0,
+52,Hau Giang,SummerAutumn,"Rice, paddy",0.0,371281630.0,2015,0.0,0.0,371281630.0,No correction needed
+53,Hau Giang,SummerAutumn,"Rice, paddy",0.0,29177342.0,2016,0.0,0.0,29177342.0,No correction needed
+54,Hau Giang,AutumnWinter,"Rice, paddy",0.0,242830130.0,2015,0.0,0.0,242830130.0,No correction needed
+55,Hau Giang,AutumnWinter,"Rice, paddy",0.0,242830130.0,2016,0.0,0.0,242830130.0,No correction needed
+56,Kien Giang,MUA (ha),"Rice, paddy",0.0,270874200.0,2015,0.0,0.0,270874200.0,No correction needed
+57,Kien Giang,MUA (ha),"Rice, paddy",0.0,270874200.0,2016,0.0,0.0,270874200.0,No correction needed
+58,Kien Giang,WinterSpring,"Rice, paddy",4.0755628039068625e-12,1873629200.0,2015,3.0,12.0,1873629200.0,
+59,Kien Giang,WinterSpring,"Rice, paddy",3.4053755371132866e-08,-0.0,2016,3.0,12.0,-0.0,
+60,Kien Giang,SummerAutumn,"Rice, paddy",0.0,1347906300.0,2015,0.0,0.0,1347906300.0,No correction needed
+61,Kien Giang,SummerAutumn,"Rice, paddy",0.0,1347906300.0,2016,0.0,0.0,1347906300.0,No correction needed
+62,Kien Giang,AutumnWinter,"Rice, paddy",0.0,413581570.0,2015,0.0,0.0,413581570.0,No correction needed
+63,Kien Giang,AutumnWinter,"Rice, paddy",0.0,413581570.0,2016,0.0,0.0,413581570.0,No correction needed
+64,Soc Trang,MUA (ha),"Rice, paddy",0.0,125656250.0,2015,0.0,0.0,125656250.0,No correction needed
+65,Soc Trang,MUA (ha),"Rice, paddy",0.0,125656250.0,2016,0.0,0.0,125656250.0,No correction needed
+66,Soc Trang,WinterSpring,"Rice, paddy",0.08566873520612717,489134180.0,2015,3.0,12.0,489134180.0,
+67,Soc Trang,WinterSpring,"Rice, paddy",0.35279572010040283,-0.0,2016,3.0,12.0,-0.0,
+68,Soc Trang,SummerAutumn,"Rice, paddy",0.0,930643900.0,2015,0.0,0.0,930643900.0,No correction needed
+69,Soc Trang,SummerAutumn,"Rice, paddy",0.0,0.0,2016,0.0,0.0,0.0,No correction needed
+70,Soc Trang,AutumnWinter,"Rice, paddy",0.0,52119396.0,2015,0.0,0.0,52119396.0,No correction needed
+71,Soc Trang,AutumnWinter,"Rice, paddy",0.0,52119396.0,2016,0.0,0.0,52119396.0,No correction needed
+72,Tien Giang,MUA (ha),"Rice, paddy",0.0,0.0,2015,0.0,0.0,0.0,No correction needed
+73,Tien Giang,MUA (ha),"Rice, paddy",0.0,0.0,2016,0.0,0.0,0.0,No correction needed
+74,Tien Giang,WinterSpring,"Rice, paddy",9.161805064650252e-05,462055420.0,2015,3.0,12.0,462055420.0,
+75,Tien Giang,WinterSpring,"Rice, paddy",0.03265346959233284,-0.0,2016,3.0,12.0,-0.0,
+76,Tien Giang,SummerAutumn,"Rice, paddy",0.0,543557570.0,2015,0.0,0.0,543557570.0,No correction needed
+77,Tien Giang,SummerAutumn,"Rice, paddy",0.0,543557570.0,2016,0.0,0.0,543557570.0,No correction needed
+78,Tien Giang,AutumnWinter,"Rice, paddy",0.0,173558460.0,2015,0.0,0.0,173558460.0,No correction needed
+79,Tien Giang,AutumnWinter,"Rice, paddy",0.0,173558460.0,2016,0.0,0.0,173558460.0,No correction needed
+80,Tra Vinh,MUA (ha),"Rice, paddy",0.0,14207979.0,2015,0.0,0.0,14207979.0,No correction needed
+81,Tra Vinh,MUA (ha),"Rice, paddy",0.0,14207979.0,2016,0.0,0.0,14207979.0,No correction needed
+82,Tra Vinh,WinterSpring,"Rice, paddy",0.0,375363600.0,2015,3.0,12.0,375363600.0,
+83,Tra Vinh,WinterSpring,"Rice, paddy",0.0,-0.0,2016,3.0,12.0,-0.0,
+84,Tra Vinh,SummerAutumn,"Rice, paddy",0.0,347848220.0,2015,0.0,0.0,347848220.0,No correction needed
+85,Tra Vinh,SummerAutumn,"Rice, paddy",0.0,347848220.0,2016,0.0,0.0,347848220.0,No correction needed
+86,Tra Vinh,AutumnWinter,"Rice, paddy",0.0,374884640.0,2015,0.0,0.0,374884640.0,No correction needed
+87,Tra Vinh,AutumnWinter,"Rice, paddy",0.0,374884640.0,2016,0.0,0.0,374884640.0,No correction needed
+88,Vinh Long,MUA (ha),"Rice, paddy",0.0,0.0,2015,0.0,0.0,0.0,No correction needed
+89,Vinh Long,MUA (ha),"Rice, paddy",0.0,0.0,2016,0.0,0.0,0.0,No correction needed
+90,Vinh Long,WinterSpring,"Rice, paddy",0.0036454161163419485,352260320.0,2015,3.0,12.0,352260320.0,
+91,Vinh Long,WinterSpring,"Rice, paddy",0.2416669726371765,-0.0,2016,3.0,12.0,-0.0,
+92,Vinh Long,SummerAutumn,"Rice, paddy",0.0,272004960.0,2015,0.0,0.0,272004960.0,No correction needed
+93,Vinh Long,SummerAutumn,"Rice, paddy",0.0,272004960.0,2016,0.0,0.0,272004960.0,No correction needed
+94,Vinh Long,AutumnWinter,"Rice, paddy",0.0,278162340.0,2015,0.0,0.0,278162340.0,No correction needed
+95,Vinh Long,AutumnWinter,"Rice, paddy",0.0,278162340.0,2016,0.0,0.0,278162340.0,No correction needed

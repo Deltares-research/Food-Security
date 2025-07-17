@@ -1,14 +1,19 @@
 [main]
-year = 2016
+year = [2015, 2016]
 output_path = "./output/results.csv"
 country = "Viet Nam"
 country_area = 331690    # Country area should be in km2
 aoi.path = "tests/test_data/aoi.gpkg"
 population.path = "tests/test_data/population.csv"
 
+[food_production.modelled_crops]
+path = "tests/test_data/corrected-yield.csv"
+region_column = "area_map_name"
+yield_column = "corrected_yield"
+crops = ["rice"]
 
 [food_production.modelled_crops.rice]
-path = "tests/test_data/RIB_CULT_prod.his"
+crop_name_fao = "Rice, paddy"
 calories = 280 # Calories per 100 gram
 
 [food_production.other_crops]

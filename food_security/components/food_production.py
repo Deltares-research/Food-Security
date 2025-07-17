@@ -4,17 +4,12 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import pandas as pd
 
-from food_security.data_reader import HisFile
 from food_security.fao_api import get_food_production_df
 from food_security.interface.base import FSBase
 from food_security.utils import _prep_conversion_table
-
-if TYPE_CHECKING:
-    import geopandas as gpd
 
 logger = logging.getLogger(__name__)
 
@@ -24,15 +19,30 @@ class FoodProduction(FSBase):
 
     def add_modelled_crops(self) -> None:
         """Add modeled crops to region GeoDataFrame."""
-        for crop, file_path in self.cfg["food_production"]["modelled_crops"].items():
-            logger.info("Parsing %s data from file", crop)
-            hisfile = HisFile(file_path["path"], crop=crop)
-            hisfile.read()
-            crop_data = hisfile.to_table(year=self.cfg["main"]["year"])
-            if not crop_data.empty:
+        config = self.cfg["food_production"]["modelled_crops"]
+        file_path = config["path"]
+        crop_data = pd.read_csv(file_path)
+        crop_data = crop_data[crop_data["year"] == self.year]
+
+        # Rename region column if region column is not called Name
+        if config["region_column"] != "Name":
+            crop_data = crop_data.rename(
+                columns={
+                    config["region_column"]: "Name",
+                },
+            )
+        for crop in config["crops"]:
+            logger.info("Parsing %s yield from file", crop)
+            crop_name = config[crop]["crop_name_fao"]
+            crop_df = crop_data[crop_data["crop_name_fao"] == crop_name]
+            crop_df = pd.DataFrame(
+                crop_df.groupby(by="Name")[config["yield_column"]].sum().reset_index(),
+            )
+            crop_df = crop_df.rename(columns={config["yield_column"]: crop})
+            if not crop_df.empty:
                 logger.info("Adding modelled %s production to regions", crop)
-                crop_data = crop_data.rename(columns={"region": "Name"})
-                self.region = self.region.merge(crop_data, how="left", on="Name")
+
+                self.region = self.region.merge(crop_df, how="left", on="Name")
 
     def add_other_crops(self) -> None:
         """Add other crop production."""
@@ -76,7 +86,7 @@ class FoodProduction(FSBase):
         """Fetch the crop and livestock data of the FAO."""
         prod_data = get_food_production_df(
             country_name=self.cfg["main"]["country"],
-            year=self.cfg["main"]["year"],
+            year=self.year,
         )
         conversion_table = pd.read_csv(
             self.cfg["food_production"]["fao"]["conversion_table"]["path"],
