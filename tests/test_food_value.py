@@ -6,7 +6,7 @@ from food_security.components import FoodValue
 
 def test_food_value(config_dict, test_data_dir):
     regions = gpd.read_file(test_data_dir / "food_production_results.fgb")
-    fv = FoodValue(cfg=config_dict, region=regions.iloc[[0]])
+    fv = FoodValue(year=2016, cfg=config_dict, region=regions.iloc[[0]])
     rice = np.float64(fv.region["rice"].to_numpy()[0])
     fv.add_food_value()
     rice_calories = (
