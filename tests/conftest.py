@@ -30,7 +30,7 @@ def his_file() -> Path:
 
 
 @pytest.fixture
-def conversion_table() -> Path:
+def conversion_table(test_data_dir) -> Path:
     return test_data_dir / "conversion_table.csv"
 
 

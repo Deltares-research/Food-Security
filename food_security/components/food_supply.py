@@ -3,7 +3,6 @@
 import logging
 import re
 
-import geopandas as gpd
 import pandas as pd
 
 from food_security.fao_api import get_trade_matrix_df
@@ -27,7 +26,7 @@ class FoodSupply(FSBase):
         food_items = self.get_food_items
         trade_matrix_df = get_trade_matrix_df(
             country_name=self.cfg["main"]["country"],
-            year=self.cfg["main"]["year"],
+            year=self.year,
         )
 
         # Filter food trade df by the available crop items attached to the region

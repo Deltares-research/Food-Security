@@ -4,7 +4,7 @@ from food_security.components.food_supply import FoodSupply
 def test_FoodSupply(food_production_data):
     cfg = {"main": {"country": "Viet Nam", "year": 2016}}
     region = food_production_data.copy(deep=True)
-    fs = FoodSupply(cfg=cfg, region=food_production_data)
+    fs = FoodSupply(year=2016,cfg=cfg, region=food_production_data)
     food_items = fs.get_food_items
     food_cols = [food_item[0] + "_" + food_item[1] for food_item in food_items]
     trade_flux = fs.get_food_trade_fluxes()

@@ -33,8 +33,12 @@ class FoodValue(FSBase):
                         * 10000  # 100 gr to tonnes
                     )
         # Calculate caloric value for modelled crops
-        for crop, crop_dict in self.cfg["food_production"]["modelled_crops"].items():
-            row[crop] = row[crop] * crop_dict["calories"] * 10000
+        for crop in self.cfg["food_production"]["modelled_crops"]["crops"]:
+            row[crop] = (
+                row[crop]
+                * self.cfg["food_production"]["modelled_crops"][crop]["calories"]
+                * 10000
+            )
 
         return row
 
@@ -61,6 +65,7 @@ class FoodValue(FSBase):
             "land_ratio",
             "geometry",
             "population",
+            "year",
         ]
 
         food_cols = [

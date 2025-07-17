@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import geopandas as gpd
+import pandas as pd
 
 from food_security.components import FoodProduction, FoodSupply, FoodValue
 from food_security.config import ConfigReader
@@ -25,23 +26,33 @@ class FoodSecurity:
         self.config = ConfigReader(cfg_path, root=root)
         self.aoi = gpd.read_file(self.config["main"]["aoi"]["path"])
         self.output_path = output_path
+        self.years = (
+            [self.config["main"]["year"]]
+            if not isinstance(self.config["main"]["year"], list)
+            else self.config["main"]["year"]
+        )
 
     def run(self) -> None:
         """Run food security module."""
-        # Calculate food production
-        food_production = FoodProduction(cfg=self.config, region=self.aoi)
-        self.aoi = food_production.run()
+        results = []
 
-        # Calculate food supply for the provinces
-        food_supply = FoodSupply(cfg=self.config, region=self.aoi)
-        self.aoi = food_supply.run()
+        for year in self.years:
+            # Calculate food production
+            gdf = self.aoi.copy(deep=True)
+            gdf["year"] = year
+            food_production = FoodProduction(year=year, cfg=self.config, region=gdf)
+            gdf = food_production.run()
 
-        # Calculate food value and variety
-        food_value = FoodValue(cfg=self.config, region=self.aoi)
-        self.aoi = food_value.run()
+            # Calculate food supply for the provinces
+            food_supply = FoodSupply(year=year, cfg=self.config, region=gdf)
+            gdf = food_supply.run()
 
-        # Calculate food security per province
-        result = self._calculate_food_security(region=self.aoi)
+            # Calculate food value and variety
+            food_value = FoodValue(year=year, cfg=self.config, region=gdf)
+            gdf = food_value.run()
+
+            # Calculate food security per province
+            results.append(self._calculate_food_security(region=gdf))
 
         # Write result to file
         output_path = (
@@ -50,7 +61,8 @@ class FoodSecurity:
             else Path(self.config["main"]["output_path"])
         )
         output_path.parent.mkdir(exist_ok=True)
-        result.to_file(output_path)
+        results = pd.concat(results)
+        results.to_file(output_path)
 
     def _calculate_food_security(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
         return region
