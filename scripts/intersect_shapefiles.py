@@ -88,7 +88,7 @@ def create_command_gdf(path_command: Union[str, Path], crs: str) -> gpd.GeoDataF
     command_gdf = command_gdf.to_crs(crs)
     command_gdf["index"] = command_gdf["OBJECTID"]
     command_gdf.index = command_gdf["index"]
-    return command_shp
+    return command_gdf
 
 
 def create_governorates_gdf(
@@ -140,16 +140,16 @@ def intersect_shapefiles(
     intersection["area"] = intersection.area
     intersection_ = intersection[["command_id", "other_id", "area"]]
 
-    matrix = pd.DataFrame(
-        coo_matrix(
-            (
-                intersection_["area"].values,
-                (intersection_["command_id"].values, intersection_["other_id"].values),
-            )
+    matrix = coo_matrix(
+        (
+            intersection_["area"].values,
+            (intersection_["command_id"].values, intersection_["other_id"].values),
         )
     )
+    matrix = matrix.tocsr()
+    matrix_df = pd.DataFrame(matrix.toarray())
 
-    matrix_relative = matrix.div(matrix.sum(axis=0), axis=1)
+    matrix_relative = matrix_df.div(matrix_df.sum(axis=0), axis=1)
     matrix_relative = matrix_relative[matrix_relative.index.isin(command_gdf.index)]
     matrix_relative = matrix_relative[governorate_gdf.index]
 
