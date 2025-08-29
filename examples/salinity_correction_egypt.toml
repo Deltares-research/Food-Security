@@ -1,0 +1,81 @@
+[main]
+output_path = "./output"
+country = "Egypt"
+
+[salinity_correction.provinces]
+path = ""
+
+[salinity_correction.salinity_map]
+dir = ""
+#filename = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Agr production postprocessing/JCARWQV7.Rbd/1/wq_rib.his"
+filename = "/Users/hemert/data/food-security/egypt/cases/base/wq_rib.his"
+
+[salinity_correction.crop_production]
+#path = "/Users/hemert/data/food-security/CltAgPro.his"
+path = "/Users/hemert/data/food-security/egypt/cases/base/CLTAGPRO.HIS"
+ha_path = "/Users/hemert/data/food-security/egypt/cases/base/airagdmd.his"
+wq_path = "/Users/hemert/data/food-security/egypt/cases/base/advirrig.his"
+
+[salinity_correction.salt_tolerance]
+path = "/Users/hemert/projects/food-security/Food-Security/data/fao-salt-tolerance-parameters.csv"
+
+[salinity_correction.mapping]
+path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Egypt/input.xlsx"
+
+[salinity_correction.crops]
+crops_to_correct = [
+    "Bean_FBEAN1 (ha)",
+    "LongBerseem_LBSEEM1 (ha)",
+    "ShortBerseem_SBSEMW1 (ha)",
+    "Cotton_SDELS1 (ha)",
+    "SummerMaize_MAIZES1 (ha)",
+    "Orchard_CITRUS1 (ha)",
+    "LongRice_PADDY1 (ha)",
+    "SumerSorghum_SORGMS1 (ha)",
+    "SugarBeet_SBEET1 (ha)",
+    "SugarCane_SCANE1 (ha)",
+    "SumerVegtabl_VEGETS1 (ha)",
+    "Wheat_WHEAT1 (ha)",
+    "WintrVegtabl_VEGETW1 (ha)",
+    "NiliVegetabl_VEGETN1 (ha)",
+    "NiliMaize_MAIZEN1 (ha)",
+    "Barley_BARLEY1 (ha)",
+    "NiliTomato_TMATON1 (ha)",
+    "NiliPotato_PTATON1 (ha)",
+    "NiliSorghum_SORGMN1 (ha)",
+    "SummerTomato_TMATOS1 (ha)",
+    "SummerPotato_PTATOS1 (ha)",
+    "SummerOnion_ONIONS1 (ha)",
+    "WinterTomato_TMATOW1 (ha)",
+    "WinterOnion_ONIONW1 (ha)",
+    "OtherLegume_OLGUME1 (ha)",
+    "Flax_FLAX1 (ha)",
+    "Soybean_SBEAN1 (ha)",
+    "Lentil_LENTIL1 (ha)",
+    "Sesame_SESAME1 (ha)",
+    "Peanut_GNUT1 (ha)",
+    "WinterPotato_PTATOW1 (ha)"
+]
+
+
+[salinity_correction.land_use.directories]
+"Rice, paddy" = "/Users/hemert/data/food-security/"
+
+[salinity_correction.land_use.filename]
+filename = ""
+
+[salinity_correction.output]
+salinity_path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Egypt/results-per-case/corrected-yield-50-years-base.csv"
+water_path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Egypt/results-per-case/water-productivity-50-years-base.csv"
+
+[salinity_correction.crs]
+commune = "EPSG:4326"
+salinity = ""
+department = "EPSG:32636"
+
+[salinity_correction.departments]
+common_unit_path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Egypt/Final2_Command_Area.shp"
+departments_path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Egypt/departments.shp"
+
+
+
