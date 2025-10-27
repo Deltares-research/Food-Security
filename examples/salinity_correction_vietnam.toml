@@ -1,0 +1,51 @@
+[main]
+output_path = "./output"
+country = "Vietnam"
+
+[salinity_correction.provinces]
+path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Vietnam/provinces_area.shp"
+
+[salinity_correction.salinity_map]
+dir = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Vietnam/scenarios/"
+filename = "vmd3d_{YEAR}_salinity_50_map.xyz"
+
+[salinity_correction.crop_production]
+#path = "/Users/hemert/data/food-security/CltAgPro.his"
+path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/RIBASIM/Ribasim8_MekDelta/Modules/ribasim/Mekong.1/work/RIB_CULT_prod.his"
+ha_path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/RIBASIM/Ribasim8_MekDelta/Modules/ribasim/Mekong.1/work/RIB_ADVIR_dmnd.his"
+wq_path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/RIBASIM/Ribasim8_MekDelta/Modules/ribasim/Mekong.1/work/RIB_ADVIR.his"
+
+[salinity_correction.salt_tolerance]
+path = "/Users/hemert/projects/food-security/Food-Security/data/fao-salt-tolerance-parameters.csv"
+
+[salinity_correction.mapping]
+path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Vietnam/input.xlsx"
+
+[salinity_correction.crops]
+crops_to_correct = [
+    "WinterSpring"
+]
+
+
+[salinity_correction.land_use.directories]
+"Rice, paddy" = "/Users/hemert/data/food-security/"
+
+[salinity_correction.land_use.filename]
+filename = "landuse_mask_rice_{YEAR}.tif"
+
+[salinity_correction.output]
+salinity_path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Vietnam/results/corrected-yield-test.csv"
+water_prod_path = ""
+water_use_path = ""
+
+[salinity_correction.crs]
+commune = "EPSG:4326"
+salinity = "EPSG:32648"
+department = ""
+
+[salinity_correction.departments]
+common_unit_path = ""
+departments_path = ""
+
+
+

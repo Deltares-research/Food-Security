@@ -21,7 +21,7 @@ def test_data_dir() -> Path:
 
 @pytest.fixture
 def regions(test_data_dir) -> gpd.GeoDataFrame:
-    return gpd.read_file(test_data_dir/ "aoi.gpkg")
+    return gpd.read_file(test_data_dir / "aoi.gpkg")
 
 
 @pytest.fixture

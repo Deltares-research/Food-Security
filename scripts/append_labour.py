@@ -80,8 +80,8 @@ def add_mechanization_scores(df):
     mechanization_mapping = {
         "no_field": 0,
         "<0.64ha": 0,
-        "0.64-2.56ha": 0.6,
-        "2.56-16ha": 0.8,
+        "0.64-2.56ha": 0.8,
+        "2.56-16ha": 1,
         "16-100ha": 1,
         ">100ha": 1,
     }
