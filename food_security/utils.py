@@ -1,4 +1,5 @@
 """Module containing utility functions."""
+
 import pandas as pd
 
 

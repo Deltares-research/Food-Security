@@ -34,11 +34,12 @@ def example_config() -> dict:
 def his_file():
     return TEST_DATA_DIR / "RIB_CULT_prod.his"
 
+
 @pytest.fixture
 def conversion_table():
     return DATA_DIR / "conversion_table.csv"
 
+
 @pytest.fixture
 def food_production_data():
     return gpd.read_file(TEST_DATA_DIR / "food_production_results.fgb")
-    

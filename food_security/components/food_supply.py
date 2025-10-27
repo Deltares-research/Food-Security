@@ -24,7 +24,9 @@ class FoodSupply(FSBase):
         """Calculate food supply for regions."""
         trade_flux = self.get_food_trade_fluxes()
         self.region = self.region.apply(
-            self._calculate_trade_fluxes, axis=1, args=(trade_flux,),
+            self._calculate_trade_fluxes,
+            axis=1,
+            args=(trade_flux,),
         )
 
     def get_food_trade_fluxes(self) -> pd.DataFrame:

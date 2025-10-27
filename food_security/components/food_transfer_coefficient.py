@@ -38,7 +38,8 @@ class FoodTransferCoefficient(FSBase):
             region_roads = roads.sjoin(self.region[self.region["Name"] == region_name])
             # Clip any road geoms that are sticking outside of the region polygon
             region_roads = gpd.clip(
-                region_roads, self.region[self.region["Name"] == region_name],
+                region_roads,
+                self.region[self.region["Name"] == region_name],
             )
             region_roads = region_roads.to_crs(utm)
             region_roads["length"] = region_roads.length

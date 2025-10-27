@@ -41,7 +41,9 @@ class Grid:
         return regions
 
     def get_region_stats(
-        self, regions: gpd.GeoDataFrame, cols: dict,
+        self,
+        regions: gpd.GeoDataFrame,
+        cols: dict,
     ) -> gpd.GeoDataFrame:
         for col, stat in cols.items():
             regions = self.get_region_stat(regions, col_name=col, stat=stat)

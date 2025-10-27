@@ -8,13 +8,13 @@ path = ""
 [salinity_correction.salinity_map]
 dir = ""
 #filename = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Agr production postprocessing/JCARWQV7.Rbd/1/wq_rib.his"
-filename = "/Users/hemert/data/food-security/egypt/cases/base/wq_rib.his"
+filename = "/Users/hemert/data/food-security/egypt/cases/cc_had/wq_rib.his"
 
 [salinity_correction.crop_production]
 #path = "/Users/hemert/data/food-security/CltAgPro.his"
-path = "/Users/hemert/data/food-security/egypt/cases/base/CLTAGPRO.HIS"
-ha_path = "/Users/hemert/data/food-security/egypt/cases/base/airagdmd.his"
-wq_path = "/Users/hemert/data/food-security/egypt/cases/base/advirrig.his"
+path = "/Users/hemert/data/food-security/egypt/cases/cc_had/CLTAGPRO.HIS"
+ha_path = "/Users/hemert/data/food-security/egypt/cases/cc_had/airagdmd.his"
+wq_path = "/Users/hemert/data/food-security/egypt/cases/cc_had/advirrig.his"
 
 [salinity_correction.salt_tolerance]
 path = "/Users/hemert/projects/food-security/Food-Security/data/fao-salt-tolerance-parameters.csv"
@@ -65,8 +65,9 @@ crops_to_correct = [
 filename = ""
 
 [salinity_correction.output]
-salinity_path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Egypt/results-per-case/corrected-yield-50-years-base.csv"
-water_path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Egypt/results-per-case/water-productivity-50-years-base.csv"
+salinity_path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Egypt/results-per-case/corrected-yield-50-years-cc_had.csv"
+water_prod_path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Egypt/results-per-case/water-productivity-50-years-cc_had.csv"
+water_use_path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Egypt/results-per-case/water-use-50-years-cc_had.csv"
 
 [salinity_correction.crs]
 commune = "EPSG:4326"

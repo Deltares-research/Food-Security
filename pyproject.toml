@@ -7,6 +7,17 @@ name = "food_security"
 authors = [{name = "Tjalling de Jong", email = "tjalling.dejong@deltares.nl"}]
 readme = "README.md"
 dynamic = ["version", "description"]
+dependencies = [
+    "faostat>=1.1.2",
+    "geopandas>=1.1.1",
+    "matplotlib>=3.10.3",
+    "openpyxl>=3.1.5",
+    "rasterio>=1.4.3",
+    "rasterstats>=0.20.0",
+    "scipy>=1.16.0",
+    "tomli>=2.2.1",
+    "xarray>=2025.7.1",
+]
 
 
 [tool.pytest.ini_options]

@@ -1,79 +1,61 @@
-import datetime
 import re
-from pathlib import Path
-from typing import List, Optional, Union
-
-import faostat
-import geopandas as gpd
 import numpy as np
-import pandas as pd
 import rasterio
-import xarray as xr
-from intersect_shapefiles import (
-    create_command_gdf,
-    create_governorates_gdf,
-    intersect_shapefiles,
-)
-from rasterio.io import MemoryFile
-from rasterio.mask import mask
-from rasterio.transform import from_origin
+import geopandas as gpd
+import pandas as pd
 
 from food_security import data_reader
+from rasterio.transform import from_origin
+from rasterio.mask import mask
+from rasterio.io import MemoryFile
+
+from typing import Optional, Union, List
+
 from food_security.config import ConfigReader
-import append_labour
+from food_security.intersect_shapefiles import (
+    intersect_shapefiles,
+    create_governorates_gdf,
+    create_command_gdf,
+)
+
+from pathlib import Path
 
 
 def load_input_data(
     his_file: Union[str, Path],
-    hectare_his_file: Union[str, Path],
     communes_file: Union[str, Path],
     salinity_param_file: Union[str, Path],
     mapping_file: Union[str, Path],
     fao_mapping_file: Union[str, Path],
-    land_name: str,
 ):
     # Read the HIS file and create a dataset for crop production data.
-    production_his_file = data_reader.HisFile(his_file, crop=None)
+    production_his_file = data_reader.HisFile(his_file)
     production_his_file.read()
     production_ds = production_his_file.ds.copy(deep=True)
 
-    hectare_his_file = data_reader.HisFile(hectare_his_file, crop=None)
-    hectare_his_file.read(hia=True)
-    hectare_ds = hectare_his_file.ds.copy(deep=True)
     # Read the communes shapefile and create a geopandas dataframe.
-    if communes_file:
-        communes_gdf = gpd.read_file(communes_file)
-    else:
-        communes_gdf = None
+    communes_gdf = gpd.read_file(communes_file)
 
     # Read csv file containing salinity threshold and yield decrease per crop from FAO
     salinity_param_df = pd.read_csv(salinity_param_file)
     # Read the mapping file for crop name from FAO and crop name in RIBASIM model
     mapping_df = pd.read_excel(mapping_file, engine="openpyxl", sheet_name="crop_id")
-    fao_mapping_salt_df = pd.read_excel(
+    fao_mapping_df = pd.read_excel(
         fao_mapping_file, engine="openpyxl", sheet_name="Salt"
-    )
-    fao_mapping_price_df = pd.read_excel(
-        fao_mapping_file, engine="openpyxl", sheet_name="Price"
     )
     # Read the mapping file for area name in communes_gdf and area name and id in RIBASIM model
     area_df = pd.read_excel(mapping_file, engine="openpyxl", sheet_name="area")
     # Read file for coupling of crop id and crop name in RIBASIM model
     crop_id_df = pd.read_excel(mapping_file, engine="openpyxl", sheet_name="crop")
 
-    pp_df = get_producer_prices_df(land_name=land_name)
-
     return (
         production_ds,
-        hectare_ds,
         communes_gdf,
         salinity_param_df,
         mapping_df,
-        fao_mapping_salt_df,
-        fao_mapping_price_df,
+        fao_mapping_df,
         area_df,
         crop_id_df,
-        pp_df,
     )
 
 
@@ -202,13 +184,11 @@ def yield_reduction(
     ec_raster: np.ndarray,
     threshold=3,
     yield_decrease=12,
-    is_raster: Optional[bool] = False,
+    raster: Optional[bool] = False,
 ):
-    if is_raster:
+    if raster:
         # Compute median of EC raster (where we have EC values after masking)
         ec_median = np.nanmedian(ec_raster)
-    else:
-        ec_median = ec_raster
     # Convert percentage of yield_decrease to a fraction
     yield_decrease = yield_decrease / 100
 
@@ -226,56 +206,22 @@ def corrected_production(production_commune, reduction):
 
 def get_area_id(area_df, area):
     try:
-        return area_df[area_df["area_name"] == area]["area_id"].iloc[0]
+        return area_df[area_df["area_map_name"] == area]["area_id"].iloc[0]
     except IndexError:
         return None
 
 
-def get_crop_info(
-    mapping_df, fao_mapping_salt_df, fao_mapping_price_df, crop_id_df, crop
-):
+def get_crop_info(mapping_df, fao_mapping_df, crop_id_df, crop):
     # Get FAO crop name and crop id from mapping
     crop_fao = mapping_df[mapping_df["crop_name"] == crop]["crop_name_fao"].iloc[0]
-    crop_fao_salt = fao_mapping_salt_df[fao_mapping_salt_df["FAOSTAT FLC"] == crop_fao][
+    crop_fao_salt = fao_mapping_df[fao_mapping_df["FAOSTAT FLC"] == crop_fao][
         "FAOSTAT SALT"
     ].iloc[0]
-    # try:
-    crop_fao_price = fao_mapping_price_df[fao_mapping_price_df["fao_flc"] == crop_fao][
-        "fao_producer"
-    ].values
-    # except IndexError:
-    #     crop_fao_price = None
     crop_id = crop_id_df[crop_id_df["crop_name"] == crop]["crop_id"].iloc[0]
     # Get just the numbers from crop id
     crop_id = re.search(r"Cr(\d+)", crop_id).group(1)
 
-    crop_start_ts = crop_id_df[crop_id_df["crop_name"] == crop]["start_ts"].iloc[0]
-    crop_end_ts = crop_id_df[crop_id_df["crop_name"] == crop]["end_ts"].iloc[0]
-
-    crop_start_ts_dt = datetime.datetime.strptime(crop_start_ts, "%m-%d")
-    crop_end_ts_dt = datetime.datetime.strptime(crop_end_ts, "%m-%d")
-
-    return (
-        crop_fao,
-        crop_fao_salt,
-        crop_fao_price,
-        crop_id,
-        crop_start_ts,
-        crop_end_ts,
-        crop_start_ts_dt,
-        crop_end_ts_dt,
-    )
-
-
-def get_year_info(production_ds):
-    # Get years from dataset
-    years = production_ds.time.values
-    years = years.astype("datetime64[Y]").astype(int) + 1970
-    # Convert to datetime
-    years_dt = pd.to_datetime(years, format="%Y")
-    # Update coords in production_ds
-    production_ds = production_ds.assign_coords(time=years_dt)
-    return production_ds, years
+    return crop_fao, crop_fao_salt, crop_id
 
 
 def get_production_value(production_ds, area_id, crop_id, year):
@@ -299,36 +245,6 @@ def get_production_value(production_ds, area_id, crop_id, year):
     return production_commune
 
 
-def get_hectares(
-    hectare_ds: xr.Dataset,
-    area: str,
-    area_id,
-    crop_name: str,
-    crop_id,
-    crop_start_ts: str,
-    crop_end_ts: str,
-    crop_start_ts_dt: str,
-    crop_end_ts_dt: str,
-    year: Union[str, int],
-):
-    start_ts = f"{year}-{crop_start_ts}"
-    if crop_start_ts_dt >= crop_end_ts_dt:
-        end_ts = f"{year + 1}-{crop_end_ts}"
-    else:
-        end_ts = f"{year}-{crop_end_ts}"
-
-    variable_name = f"P Cr{crop_id}/{crop_name}"
-
-    timeframe = slice(start_ts, end_ts)
-
-    node = f"{area_id} / {area}"
-
-    hectares = hectare_ds.sel({"station": node, "time": timeframe})[variable_name]
-    hectares = hectares.max(dim="time").values
-
-    return hectares
-
-
 def compute_salinity(
     area: str,
     year: Union[str, int],
@@ -341,7 +257,7 @@ def compute_salinity(
     area_crs: str,
 ):
     # Create salinity raster for the year
-    salinity_file = Path(str(salinity_filename).replace("{YEAR}", str(year)))
+    salinity_file = salinity_filename.replace("{YEAR}", str(year))
     raster = create_salinity_raster(
         Path(salinity_dir) / salinity_file, crs=salinity_crs
     )
@@ -383,38 +299,11 @@ def apply_yield_correction(
 ):
     # Compute yield reduction based on salinity and FAO parameters
     reduction = yield_reduction(
-        overlapped_raster, threshold=a, yield_decrease=b, is_raster=True
+        overlapped_raster, threshold=a, yield_decrease=b, raster=True
     )
     # Apply yield reduction to production
     corrected_yield = corrected_production(production_commune, reduction)
     return corrected_yield
-
-
-def get_producer_prices_df(land_name: str):
-    area_code = faostat.get_par("PP", "area")[land_name]
-
-    pp_df = faostat.get_data_df("PP", pars={"area": area_code})
-    pp_df = pp_df[pp_df["Element"] == "Producer Price (USD/tonne)"]
-    pp_df = pp_df[pp_df["Months"] == "Annual value"]
-
-    return pp_df
-
-
-def get_producer_prices(pp_df: pd.DataFrame, crop_name):
-    pp_df_sorted = pp_df.sort_values(by="Year")
-    pp_crop = pp_df_sorted[
-        (pp_df_sorted["Item"].isin(crop_name))
-        & (pp_df_sorted["Year"].isin(["2019", "2020", "2021"]))
-    ]["Value"].values
-    pp_crop = pp_crop.astype(np.float32)
-    if len(pp_crop) == 0:
-        pp_crop = pp_df_sorted[pp_df_sorted["Item"] == crop_name]["Value"].values[-3:]
-        pp_crop = pp_crop.astype(np.float32)
-        if len(pp_crop) == 0:
-            return 0
-    pp_crop = pp_crop.mean()
-
-    return pp_crop
 
 
 def get_departmental_yield(
@@ -447,12 +336,10 @@ def convert_to_departments(
         "crop_name_fao": [],
         "salinity": [],
         "yield": [],
-        "hectares": [],
         "year": [],
         "a": [],
         "b": [],
         "corrected_yield": [],
-        "corrected_yield_pp": [],
         "comment": [],
     }
 
@@ -464,15 +351,7 @@ def convert_to_departments(
             crop_yield_df = crop_yield_df.sort_values(by="object_id")
 
             departmental_yield = get_departmental_yield(
-                crop_yield_df,
-                conversion_matrix,
-                [
-                    "salinity",
-                    "yield",
-                    "hectares",
-                    "corrected_yield",
-                    "corrected_yield_pp",
-                ],
+                crop_yield_df, conversion_matrix, ["yield", "corrected_yield"]
             )
 
             n_departments = departments_gdf.shape[0]
@@ -481,104 +360,24 @@ def convert_to_departments(
             department_df["crop_name_fao"].append(
                 [crop_yield_df["crop_name_fao"].unique()[0]] * n_departments
             )
-            department_df["salinity"].append(departmental_yield["salinity"].values)
+            department_df["salinity"].append(
+                [crop_yield_df["salinity"].unique()[0]] * n_departments
+            )
             department_df["yield"].append(departmental_yield["yield"].values)
-            department_df["hectares"].append(departmental_yield["hectares"].values)
             department_df["year"].append([year] * n_departments)
             department_df["a"].append([crop_yield_df["a"].unique()[0]] * n_departments)
             department_df["b"].append([crop_yield_df["b"].unique()[0]] * n_departments)
             department_df["corrected_yield"].append(
                 departmental_yield["corrected_yield"].values
             )
-            department_df["corrected_yield_pp"].append(
-                departmental_yield["corrected_yield_pp"].values
-            )
             department_df["comment"].append(
                 [crop_yield_df["comment"].unique()[0]] * n_departments
             )
-    for key, value in department_df.items():
-        value_array = np.array(value)
-        new_value = value_array.flatten()
-        department_df[key] = new_value
-
-    department_df = pd.DataFrame(department_df)
-    return department_df
-
-
-def yield_correction_xyz(
-    production_area: str,
-    area: str,
-    year,
-    salinity_dir,
-    salinity_filename,
-    mask_dir,
-    mask_filename,
-    communes_gdf,
-    salinity_crs,
-    area_crs: str,
-    a: Union[int, float],
-    b: Union[int, float],
-):
-    salinity, overlapped_raster = compute_salinity(
-        area,
-        year,
-        salinity_dir,
-        salinity_filename,
-        mask_dir,
-        mask_filename,
-        communes_gdf,
-        salinity_crs,
-        area_crs,
-    )
-    corrected_yield = apply_yield_correction(production_area, overlapped_raster, a, b)
-
-    return corrected_yield, salinity
-
-
-def yield_correction_his(
-    production_area,
-    area: str,
-    year: Union[int, float, str],
-    crop_start_ts,
-    crop_end_ts,
-    crop_start_ts_dt,
-    crop_end_ts_dt,
-    salinity_filename: Union[Path, str],
-    a: Union[int, float],
-    b: Union[int, float],
-    salinity_ds: xr.Dataset = None,
-):
-    if salinity_ds is None:
-        salinity_his = data_reader.HisFile(salinity_filename, crop=None)
-        salinity_his.read(hia=True)
-        salinity_ds = salinity_his.ds.copy(deep=True)
-
-    if area not in salinity_ds.station:
-        return (None, None, salinity_ds)
-
-    start_ts = f"{year}-{crop_start_ts}"
-    if crop_start_ts_dt >= crop_end_ts_dt:
-        end_ts = f"{year + 1}-{crop_end_ts}"
-    else:
-        end_ts = f"{year}-{crop_end_ts}"
-
-    salinity = get_salinity(salinity_ds, area, start_ts, end_ts)
-    salinity = ppm_to_ec(salinity)
-
-    # Compute yield reduction based on salinity and FAO parameters
-    reduction = yield_reduction(
-        salinity, threshold=a, yield_decrease=b, is_raster=False
-    )
-    # Apply yield reduction to production
-    corrected_yield = corrected_production(production_area, reduction)
-
-    return corrected_yield, salinity, salinity_ds
 
 
 def correct_crop_yield(
-    land_name: str,
     his_file: Union[str, Path],
-    hectare_his_file: Union[str, Path],
+    communes_file: Union[str, Path],
     salinity_dir: Union[str, Path],
     salinity_filename: Union[str, Path],
     salinity_param_file: Union[str, Path],
@@ -587,12 +386,12 @@ def correct_crop_yield(
     mapping_file: Union[str, Path],
     fao_mapping_file: Union[str, Path],
     crops_to_correct: List[str],
+    years: List[Union[int, str]],
     area_crs: Optional[str] = "EPSG:4326",
     salinity_crs: Optional[str] = "EPSG:32648",
-    communes_file: Optional[Union[str, Path]] = None,
+    common_unit_conversion: Optional[bool] = False,
     common_unit_filename: Optional[Union[str, Path]] = None,
     department_file: Optional[Union[str, Path]] = None,
-    department_crs: Optional[str] = None,
 ):
     # Initialize a dictionary to store the results (columns in csv)
     df_dict = {
@@ -601,124 +400,67 @@ def correct_crop_yield(
         "crop_name_fao": [],
         "salinity": [],
         "yield": [],
-        "hectares": [],
         "year": [],
         "a": [],
         "b": [],
         "corrected_yield": [],
-        "corrected_yield_pp": [],
         "comment": [],
         "object_id": [],
     }
 
     (
         production_ds,
-        hectare_ds,
         communes_gdf,
         salinity_param_df,
         mapping_df,
-        fao_mapping_salt_df,
-        fao_mapping_price_df,
+        fao_mapping_df,
         area_df,
         crop_id_df,
-        pp_df,
     ) = load_input_data(
         his_file=his_file,
-        hectare_his_file=hectare_his_file,
         communes_file=communes_file,
         salinity_param_file=salinity_param_file,
         mapping_file=mapping_file,
         fao_mapping_file=fao_mapping_file,
-        land_name=land_name,
     )
 
     crops = mapping_df["crop_name"].values
-    production_ds, years = get_year_info(production_ds=production_ds)
-    salinity_ds = None
-    for area in area_df["area_name"]:
+    for area in communes_gdf["Name"]:
         # Get area from mapping if it exists
-        area_map_name = area_df[area_df["area_name"] == area]["area_map_name"].iloc[0]
         area_id = get_area_id(area_df, area)
-        print(f"{area_id} / {area}")
-        # print(area_id, area, area_map_name, years, crops)
         if area_id is None:
             continue
         for crop in crops:
             # Get FAO crop name and crop id from mapping
-            (
-                crop_fao,
-                crop_fao_salt,
-                crop_fao_price,
-                crop_id,
-                crop_start_ts,
-                crop_end_ts,
-                crop_start_ts_dt,
-                crop_end_ts_dt,
-            ) = get_crop_info(
-                mapping_df, fao_mapping_salt_df, fao_mapping_price_df, crop_id_df, crop
+            crop_fao, crop_fao_salt, crop_id = get_crop_info(
+                mapping_df, fao_mapping_df, crop_id_df, crop
             )
-
             for year in years:
                 production_area = get_production_value(
                     production_ds, area_id, crop_id, year
                 )
                 if production_area is None:
                     continue
-                hectares = get_hectares(
-                    hectare_ds=hectare_ds,
-                    area=area,
-                    area_id=area_id,
-                    crop_name=crop,
-                    crop_id=crop_id,
-                    crop_start_ts=crop_start_ts,
-                    crop_end_ts=crop_end_ts,
-                    crop_start_ts_dt=crop_start_ts_dt,
-                    crop_end_ts_dt=crop_end_ts_dt,
-                    year=year,
-                )
-                if crop_fao == "Onions, shallots (green)":
-                    ___ = 10
-                crop_pp = get_producer_prices(pp_df=pp_df, crop_name=crop_fao_price)
                 # Check if the crop needs to be corrected
                 if crop in crops_to_correct:
+                    salinity, overlapped_raster = compute_salinity(
+                        area,
+                        year,
+                        salinity_dir,
+                        salinity_filename,
+                        mask_dir,
+                        mask_filename,
+                        communes_gdf,
+                        salinity_crs,
+                        area_crs,
+                    )
+
                     a, b, comment = get_salinity_parameters(
                         salinity_param_df, crop_fao_salt
                     )
-
-                    salinity_filename = Path(salinity_filename)
-                    if salinity_filename.suffix == ".xyz":
-                        corrected_yield, salinity = yield_correction_xyz(
-                            production_area=production_area,
-                            area=area_map_name,
-                            year=year,
-                            salinity_dir=salinity_dir,
-                            salinity_filename=salinity_filename,
-                            salinity_crs=salinity_crs,
-                            mask_dir=mask_dir,
-                            mask_filename=mask_filename,
-                            communes_gdf=communes_gdf,
-                            area_crs=area_crs,
-                            a=a,
-                            b=b,
-                        )
-                    elif salinity_filename.suffix == ".his":
-                        result = yield_correction_his(
-                            production_area=production_area,
-                            area=area,
-                            year=year,
-                            crop_start_ts=crop_start_ts,
-                            crop_end_ts=crop_end_ts,
-                            crop_start_ts_dt=crop_start_ts_dt,
-                            crop_end_ts_dt=crop_end_ts_dt,
-                            salinity_filename=salinity_filename,
-                            a=a,
-                            b=b,
-                            salinity_ds=salinity_ds,
-                        )
-                        corrected_yield, salinity, salinity_ds = result
-                        if corrected_yield is None:
-                            continue
-
+                    corrected_yield = apply_yield_correction(
+                        production_area, overlapped_raster, a, b
+                    )
                 else:
                     salinity = 0
                     a, b = 0, 0
@@ -736,20 +478,18 @@ def correct_crop_yield(
                 df_dict["crop_name_fao"].append(crop_fao)
                 df_dict["salinity"].append(salinity)
                 df_dict["yield"].append(production_area)
-                df_dict["hectares"].append(hectares)
                 df_dict["year"].append(year)
                 df_dict["a"].append(a)
                 df_dict["b"].append(b)
                 df_dict["corrected_yield"].append(corrected_yield)
-                df_dict["corrected_yield_pp"].append(corrected_yield / 1000 * crop_pp)
                 df_dict["comment"].append(comment)
                 df_dict["object_id"].append(object_id)
 
     df = pd.DataFrame(df_dict)
 
-    if department_file:
-        common_unit_gdf = create_command_gdf(common_unit_filename, crs=department_crs)
-        department_gdf = create_governorates_gdf(department_file, crs=department_crs)
+    if common_unit_conversion:
+        common_unit_gdf = create_command_gdf(common_unit_filename, crs="epsg:32636")
+        department_gdf = create_governorates_gdf(department_file, crs="epsg:32636")
         conversion_matrix = intersect_shapefiles(common_unit_gdf, department_gdf)
 
         df = convert_to_departments(df, conversion_matrix, department_gdf)
@@ -761,15 +501,13 @@ def correct_crop_yield(
 
 if __name__ == "__main__":
     cfg_path = Path(
-        "/Users/hemert/projects/food-security/Food-Security/examples/salinity_correction_egypt.toml"
+        "/Users/hemert/projects/food-security/Food-Security/examples/salinity_correction.toml"
     )  # Replace with the actual path to your config file
     config = ConfigReader(cfg_path)
     salinity_config = config["salinity_correction"]
 
     corrected_df = correct_crop_yield(
-        land_name=config["main"]["country"],
         his_file=salinity_config["crop_production"]["path"],
-        hectare_his_file=salinity_config["crop_production"]["ha_path"],
         communes_file=salinity_config["provinces"]["path"],
         salinity_dir=salinity_config["salinity_map"]["dir"],
         salinity_filename=salinity_config["salinity_map"]["filename"],
@@ -779,19 +517,9 @@ if __name__ == "__main__":
         fao_mapping_file="/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Food security/FAO.xlsx",
         mapping_file=salinity_config["mapping"]["path"],
         crops_to_correct=salinity_config["crops"]["crops_to_correct"],
+        years=salinity_config["years"]["years"],
         area_crs=salinity_config["crs"]["commune"],
         salinity_crs=salinity_config["crs"]["salinity"],
-        common_unit_filename=salinity_config["departments"]["common_unit_path"],
-        department_file=salinity_config["departments"]["departments_path"],
-        department_crs=salinity_config["crs"]["department"],
     )
 
-    labour_df = append_labour.add_labour_to_production(
-        production_df=corrected_df,
-        field_size_tif_file="/Users/hemert/data/food-security/field-size/Global Field Sizes/dominant_field_size_categories.tif",
-        area_gdf_file=salinity_config["departments"]["departments_path"],
-        area_crs=salinity_config["crs"]["department"],
-        labour_mapping_file="/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Food security/FAO.xlsx",
-    )
-
-    labour_df.to_csv(salinity_config["output"]["salinity_path"])
+    corrected_df.to_csv(salinity_config["output"]["path"])

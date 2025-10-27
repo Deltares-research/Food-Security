@@ -22,7 +22,7 @@ path = "/Users/hemert/data/food-security/input_test.xlsx"
 crops_to_correct = ["WinterSpring"]
 
 [salinity_correction.land_use.directories]
-"Rice, paddy" = ""
+"Rice, paddy" = "/Users/hemert/data/food-security/"
 
 [salinity_correction.land_use.filename]
 filename = "landuse_mask_rice_{YEAR}.tif"

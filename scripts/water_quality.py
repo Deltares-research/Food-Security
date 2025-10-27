@@ -63,18 +63,23 @@ def get_departmental_yield(
     return departmental_yields
 
 
-def get_hectares(prod_ds: xr.Dataset, area, area_id, year):
+def get_hectares(prod_ds: xr.Dataset, area, area_id, year, timesteps=False):
     start_ts = f"{year}-10-01"
     end_ts = f"{year + 1}-10-1"
     timeframe = slice(start_ts, end_ts)
 
     node = f"{area_id} / {area}"
 
-    hectares = (
-        prod_ds.sel({"station": node, "time": timeframe})
-        .sum(dim="time")["Area cultivated actual (ha)"]
-        .values
-    )
+    if timesteps:
+        hectares = prod_ds.sel({"station": node, "time": timeframe})[
+            "Area cultivated actual (ha)"
+        ].values
+    else:
+        hectares = (
+            prod_ds.sel({"station": node, "time": timeframe})
+            .mean(dim="time")["Area cultivated actual (ha)"]
+            .values
+        )
     return hectares
 
 
@@ -85,25 +90,35 @@ def compute_water_productivity(wq_ds: xr.Dataset, producer_price, area, year):
 
     water_supply = (
         wq_ds.sel({"station": area, "time": timeframe})
-        .sum(dim="time")["Supply from network (m3/s)"]
+        .mean(dim="time")["Supply from network (m3/s)"]
         .values
     )
 
-    water_productivity = producer_price / water_supply
+    water_supply_annual = water_supply * 365.25 * 24 * 3600
+
+    water_productivity = producer_price / water_supply_annual
 
     return water_productivity
 
 
-def compute_water_use(prod_ds: xr.Dataset, area, area_id, year):
+def get_timesteps(prod_ds: xr.Dataset, area, area_id, year):
     start_ts = f"{year}-10-01"
-    end_ts = f"{year + 1}-10-1"
+    end_ts = f"{year + 1}-10-01"
     timeframe = slice(start_ts, end_ts)
     node = f"{area_id} / {area}"
-    water_use = (
-        prod_ds.sel({"station": node, "time": timeframe})
-        .mean(dim="time")["Supply (mm/day)"]
-        .values
-    )
+    timesteps = prod_ds.sel({"station": node, "time": timeframe})["time"].values
+
+    return timesteps
+
+
+def compute_water_use(prod_ds: xr.Dataset, area, area_id, year):
+    start_ts = f"{year}-10-01"
+    end_ts = f"{year + 1}-10-01"
+    timeframe = slice(start_ts, end_ts)
+    node = f"{area_id} / {area}"
+    water_use = prod_ds.sel({"station": node, "time": timeframe})[
+        "Supply (mm/day)"
+    ].values
 
     return water_use
 
@@ -113,17 +128,13 @@ def compute_water_exploitation_index(wq_ds: xr.Dataset, area, year):
     end_ts = f"{year + 1}-10-1"
     timeframe = slice(start_ts, end_ts)
 
-    water_supply = (
-        wq_ds.sel({"station": area, "time": timeframe})
-        .sum(dim="time")["Supply from network (m3/s)"]
-        .values
-    )
+    water_supply = wq_ds.sel({"station": area, "time": timeframe})[
+        "Supply from network (m3/s)"
+    ].values
 
-    water_demand = (
-        wq_ds.sel({"station": area, "time": timeframe})
-        .sum(dim="time")["Demand from network (m3/s)"]
-        .values
-    )
+    water_demand = wq_ds.sel({"station": area, "time": timeframe})[
+        "Demand from network (m3/s)"
+    ].values
 
     water_expoitation_index = water_supply / water_demand
 
@@ -135,11 +146,9 @@ def get_water_demand(wq_ds: xr.Dataset, area, year):
     end_ts = f"{year + 1}-10-1"
     timeframe = slice(start_ts, end_ts)
 
-    water_demand = (
-        wq_ds.sel({"station": area, "time": timeframe})
-        .sum(dim="time")["Demand from network (m3/s)"]
-        .values
-    )
+    water_demand = wq_ds.sel({"station": area, "time": timeframe})[
+        "Demand from network (m3/s)"
+    ].values
 
     return water_demand
 
@@ -149,11 +158,9 @@ def get_water_supply(wq_ds: xr.Dataset, area, year):
     end_ts = f"{year + 1}-10-1"
     timeframe = slice(start_ts, end_ts)
 
-    water_supply = (
-        wq_ds.sel({"station": area, "time": timeframe})
-        .sum(dim="time")["Supply from network (m3/s)"]
-        .values
-    )
+    water_supply = wq_ds.sel({"station": area, "time": timeframe})[
+        "Supply from network (m3/s)"
+    ].values
 
     return water_supply
 
@@ -162,45 +169,49 @@ def convert_to_departments(
     corrected_df: pd.DataFrame,
     conversion_matrix: pd.DataFrame,
     departments_gdf: pd.DataFrame,
+    indicator_columns: List[str],
 ):
-    department_df = {
-        "year": [],
-        "area_map_name": [],
-        "water_productivity": [],
-        "water_use": [],
-        "water_supply": [],
-        "water_demand": [],
-        "water_exploitation_index": [],
-    }
 
-    for year in corrected_df["year"].unique():
-        wq_df = corrected_df[corrected_df["year"] == year]
-        wq_df = wq_df.sort_values(by="object_id")
+    base_keys = ["year", "area_map_name"]
+
+    # Add 'timestep' if present
+    if "timestep" in corrected_df.columns:
+        base_keys.insert(1, "timestep")  # insert after 'year'
+
+    department_df = {}
+
+    for key in base_keys + indicator_columns:
+        department_df[key] = []
+
+    group_cols = ["year"]
+    if "timestep" in corrected_df.columns:
+        group_cols.append("timestep")
+
+    for group_vals, wq_df in corrected_df.groupby(group_cols):
+        # Unpack group values
+        if len(group_cols) == 2:
+            year, timestep = group_vals
+        else:
+            year = group_vals
+            timestep = None
+
+        # wq_df = corrected_df[corrected_df["year"] == year]
+        # wq_df = wq_df.sort_values(by="object_id")
 
         departmental_yield = get_departmental_yield(
             wq_df,
             conversion_matrix,
-            [
-                "water_productivity",
-                "water_use",
-                "water_supply",
-                "water_demand",
-                "water_exploitation_index",
-            ],
+            indicator_columns,
         )
 
         n_departments = departments_gdf.shape[0]
         department_df["year"].append([year] * n_departments)
+        if timestep is not None:
+            department_df["timestep"].append([timestep] * n_departments)
         department_df["area_map_name"].append(departments_gdf["Name"].values)
-        department_df["water_productivity"].append(
-            departmental_yield["water_productivity"].values
-        )
-        department_df["water_use"].append(departmental_yield["water_use"].values)
-        department_df["water_supply"].append(departmental_yield["water_supply"].values)
-        department_df["water_demand"].append(departmental_yield["water_demand"].values)
-        department_df["water_exploitation_index"].append(
-            departmental_yield["water_exploitation_index"].values
-        )
+        for indicator in indicator_columns:
+            department_df[indicator].append(departmental_yield[indicator].values)
+
     for key, value in department_df.items():
         value_array = np.array(value)
         new_value = value_array.flatten()
@@ -225,10 +236,19 @@ def create_water_df(
         "year": [],
         "area_map_name": [],
         "water_productivity": [],
+        "hectares": [],
+        "object_id": [],
+    }
+
+    df_dict_time = {
+        "year": [],
+        "timestep": [],
+        "area_map_name": [],
         "water_use": [],
         "water_supply": [],
         "water_demand": [],
         "water_exploitation_index": [],
+        "hectares": [],
         "object_id": [],
     }
 
@@ -256,12 +276,19 @@ def create_water_df(
             hectares = get_hectares(
                 prod_ds=prod_ds, area=area, area_id=area_id, year=year
             )
+            hectares_t = get_hectares(
+                prod_ds=prod_ds, area=area, area_id=area_id, year=year, timesteps=True
+            )
             producer_price = corrected_df[
                 (corrected_df["year"] == year) & (corrected_df["area_map_name"] == area)
             ]["corrected_yield_pp"].sum()
 
             water_productivity = compute_water_productivity(
                 wq_ds=wq_ds, producer_price=producer_price, area=area, year=year
+            )
+
+            timesteps = get_timesteps(
+                prod_ds=prod_ds, area=area, area_id=area_id, year=year
             )
             water_use = compute_water_use(
                 prod_ds=prod_ds, area=area, area_id=area_id, year=year
@@ -272,6 +299,8 @@ def create_water_df(
                 wq_ds=wq_ds, area=area, year=year
             )
 
+            n_timesteps = timesteps.shape[0]
+
             try:
                 object_id = int(area.split("_")[-1])
             except ValueError:
@@ -280,27 +309,62 @@ def create_water_df(
             df_dict["year"].append(year)
             df_dict["area_map_name"].append(area)
             df_dict["water_productivity"].append(water_productivity)
-            df_dict["water_use"].append(water_use)
-            df_dict["water_supply"].append(water_supply)
-            df_dict["water_demand"].append(water_demand)
-            df_dict["water_exploitation_index"].append(water_exploitation_index)
+            df_dict["hectares"].append(hectares)
             df_dict["object_id"].append(object_id)
 
+            df_dict_time["year"].append([year] * n_timesteps)
+            df_dict_time["area_map_name"].append([area] * n_timesteps)
+            df_dict_time["timestep"].append(timesteps)
+            df_dict_time["water_use"].append(water_use)
+            df_dict_time["water_supply"].append(water_supply)
+            df_dict_time["water_demand"].append(water_demand)
+            df_dict_time["water_exploitation_index"].append(water_exploitation_index)
+            df_dict_time["hectares"].append(hectares_t)
+            df_dict_time["object_id"].append([object_id] * n_timesteps)
+
+    for indicator in df_dict_time.keys():
+        try:
+            df_dict_time[indicator] = np.concatenate(df_dict_time[indicator])
+        except ValueError:
+            # Fallback for scalars or inconsistent shapes
+            df_dict_time[indicator] = np.array(df_dict_time[indicator])
+
     df = pd.DataFrame(df_dict)
+    df_time = pd.DataFrame(df_dict_time)
 
     if department_file:
         common_unit_gdf = create_command_gdf(common_unit_filename, crs=department_crs)
         department_gdf = create_governorates_gdf(department_file, crs=department_crs)
         conversion_matrix = intersect_shapefiles(common_unit_gdf, department_gdf)
 
-        df = convert_to_departments(df, conversion_matrix, department_gdf)
+        df = convert_to_departments(
+            df,
+            conversion_matrix,
+            department_gdf,
+            indicator_columns=["water_productivity", "hectares"],
+        )
+        df_time = convert_to_departments(
+            df_time,
+            conversion_matrix,
+            department_gdf,
+            indicator_columns=[
+                "water_use",
+                "water_supply",
+                "water_demand",
+                "water_exploitation_index",
+                "hectares",
+            ],
+        )
     else:
         df = df.drop(columns=["object_id"])
+        df_time = df_time.drop(columns=["object_id"])
 
-    df["water_exploitation_index"] = df["water_supply"] / df["water_demand"]
-    df = df.drop(columns=["water_supply", "water_demand"])
+    df_time["water_exploitation_index"] = (
+        df_time["water_supply"] / df_time["water_demand"]
+    )
+    df_time = df_time.drop(columns=["water_supply", "water_demand"])
 
-    return df
+    return df, df_time
 
 
 if __name__ == "__main__":
@@ -330,7 +394,7 @@ if __name__ == "__main__":
         department_crs=None,
     )
 
-    water_df = create_water_df(
+    water_df, water_df_time = create_water_df(
         land_name=config["main"]["country"],
         corrected_df=corrected_df,
         wq_his_file=salinity_config["crop_production"]["wq_path"],
@@ -341,4 +405,5 @@ if __name__ == "__main__":
         department_crs=salinity_config["crs"]["department"],
     )
 
-    water_df.to_csv(salinity_config["output"]["water_path"])
+    water_df.to_csv(salinity_config["output"]["water_prod_path"])
+    water_df_time.to_csv(salinity_config["output"]["water_use_path"])
