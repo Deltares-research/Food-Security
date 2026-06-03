@@ -1,12 +1,12 @@
 [main]
 output_path = "./output"
-country = "Vietnam"
+country = "Viet Nam"
 
 [salinity_correction.provinces]
-path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Vietnam/provinces_area.shp"
+path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Vietnam/provc.shp"
 
 [salinity_correction.salinity_map]
-dir = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Vietnam/scenarios/"
+dir = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Vietnam/scenarios/base/"
 filename = "vmd3d_{YEAR}_salinity_50_map.xyz"
 
 [salinity_correction.crop_production]
@@ -23,7 +23,7 @@ path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International De
 
 [salinity_correction.crops]
 crops_to_correct = [
-    "WinterSpring"
+    "WinterSpring (ha)"
 ]
 
 
@@ -34,18 +34,18 @@ crops_to_correct = [
 filename = "landuse_mask_rice_{YEAR}.tif"
 
 [salinity_correction.output]
-salinity_path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Vietnam/results/corrected-yield-test.csv"
+salinity_path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Vietnam/results/corrected-yield-base.csv"
 water_prod_path = ""
 water_use_path = ""
 
 [salinity_correction.crs]
-commune = "EPSG:4326"
+commune = "EPSG:32648"
 salinity = "EPSG:32648"
-department = ""
+department = "EPSG:32648"
 
 [salinity_correction.departments]
-common_unit_path = ""
-departments_path = ""
+common_unit_path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Vietnam/provc.shp"
+departments_path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Vietnam/province_fwzone.shp"
 
 
 
