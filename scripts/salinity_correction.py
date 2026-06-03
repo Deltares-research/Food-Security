@@ -189,7 +189,9 @@ def overlap_ec_commune(
     communes_gdf = communes_gdf.to_crs(ec_raster.crs)
 
     # Get geometry of the commune
-    commune_geometry = communes_gdf[communes_gdf["Name"] == commune]["geometry"]
+    commune_geometry = communes_gdf[communes_gdf["OBJECTID"] == commune]["geometry"]
+    if len(commune_geometry) == 0:
+        commune_geometry = communes_gdf[communes_gdf["Name"] == commune]["geometry"]
 
     # Mask the EC raster with the geometry of the commune and convert to EC
     ec_masked = mask(ec_raster, commune_geometry, nodata=np.nan)[0]
@@ -322,6 +324,8 @@ def get_hectares(
     timeframe = slice(start_ts, end_ts)
 
     node = f"{area_id} / {area}"
+    if node not in hectare_ds.station.values:
+        node = f"{area_id} / {area}_AdvIrr{area_id}"
 
     hectares = hectare_ds.sel({"station": node, "time": timeframe})[variable_name]
     hectares = hectares.max(dim="time").values
@@ -455,6 +459,8 @@ def convert_to_departments(
         "corrected_yield_pp": [],
         "comment": [],
     }
+
+    conversion_matrix = conversion_matrix.T
 
     for year in corrected_df["year"].unique():
         for crop in corrected_df["crop_name"].unique():
@@ -726,7 +732,8 @@ def correct_crop_yield(
                     comment = "No correction needed"
 
                 try:
-                    object_id = int(area.split("_")[-1])
+                    # object_id = int(area.split("_")[-1])
+                    object_id = area_map_name
                 except ValueError:
                     object_id = None
 
@@ -752,16 +759,61 @@ def correct_crop_yield(
         department_gdf = create_governorates_gdf(department_file, crs=department_crs)
         conversion_matrix = intersect_shapefiles(common_unit_gdf, department_gdf)
 
-        df = convert_to_departments(df, conversion_matrix, department_gdf)
+        df = convert_to_departments(df, conversion_matrix, common_unit_gdf)
+        if salinity_filename.suffix == ".xyz":
+            df = correct_salinity(
+                df=df,
+                salinity_dir=salinity_dir,
+                salinity_filename=salinity_filename,
+                salinity_crs=salinity_crs,
+                mask_dir=mask_dir,
+                mask_filename=mask_filename,
+                communes_gdf=common_unit_gdf,
+                area_crs=department_crs,
+            )
     else:
         df = df.drop(columns=["object_id"])
 
     return df
 
 
+def correct_salinity(
+    df: pd.DataFrame,
+    salinity_dir,
+    salinity_filename,
+    salinity_crs,
+    mask_dir,
+    mask_filename,
+    communes_gdf,
+    area_crs,
+):
+    for i, row in df.iterrows():
+        a, b = row["a"], row["b"]
+        if a == 0 and b == 0:
+            continue
+        else:
+            corrected_yield, salinity = yield_correction_xyz(
+                production_area=row["yield"],
+                area=row["area_map_name"],
+                year=row["year"],
+                salinity_dir=salinity_dir,
+                salinity_filename=salinity_filename,
+                salinity_crs=salinity_crs,
+                mask_dir=mask_dir,
+                mask_filename=mask_filename,
+                communes_gdf=communes_gdf,
+                area_crs=area_crs,
+                a=a,
+                b=b,
+            )
+            df.loc[i, "corrected_yield"] = corrected_yield
+            df.loc[i, "salinity"] = salinity
+    return df
+
+
 if __name__ == "__main__":
     cfg_path = Path(
-        "/Users/hemert/projects/food-security/Food-Security/examples/salinity_correction_egypt.toml"
+        "/Users/hemert/projects/food-security/Food-Security/examples/salinity_correction_vietnam.toml"
     )  # Replace with the actual path to your config file
     config = ConfigReader(cfg_path)
     salinity_config = config["salinity_correction"]
@@ -781,8 +833,9 @@ if __name__ == "__main__":
         crops_to_correct=salinity_config["crops"]["crops_to_correct"],
         area_crs=salinity_config["crs"]["commune"],
         salinity_crs=salinity_config["crs"]["salinity"],
-        common_unit_filename=salinity_config["departments"]["common_unit_path"],
-        department_file=salinity_config["departments"]["departments_path"],
+        common_unit_filename=salinity_config["departments"]["departments_path"],
+        department_file=salinity_config["departments"]["common_unit_path"],
+        # department_file=None,
         department_crs=salinity_config["crs"]["department"],
     )
 
@@ -791,6 +844,7 @@ if __name__ == "__main__":
         field_size_tif_file="/Users/hemert/data/food-security/field-size/Global Field Sizes/dominant_field_size_categories.tif",
         area_gdf_file=salinity_config["departments"]["departments_path"],
         area_crs=salinity_config["crs"]["department"],
+        mapping_file=salinity_config["mapping"]["path"],
         labour_mapping_file="/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Food security/FAO.xlsx",
     )
 

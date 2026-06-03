@@ -132,6 +132,8 @@ def create_governorates_gdf(
 def intersect_shapefiles(
     command_gdf: gpd.GeoDataFrame, governorate_gdf: gpd.GeoDataFrame
 ) -> pd.DataFrame:
+    # command_gdf = translate(command_shp=command_gdf, other_shp=governorate_gdf)
+
     intersection = intersect(
         command_gdf, governorate_gdf, ["index", "command_id"], ["index", "other_id"]
     )

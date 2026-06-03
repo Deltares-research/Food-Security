@@ -151,6 +151,7 @@ def add_labour_to_production(
     field_size_tif_file,
     area_gdf_file,
     area_crs,
+    mapping_file,
     labour_mapping_file,
 ):
     labour_crop_mapping_df = pd.read_excel(
@@ -160,7 +161,10 @@ def add_labour_to_production(
         labour_mapping_file, engine="openpyxl", sheet_name="labour"
     )
 
+    area_mapping_df = pd.read_excel(mapping_file, engine="openpyxl", sheet_name="area")
+
     area_gdf = gpd.read_file(area_gdf_file, crs=area_crs)
+    area_gdf = area_gdf.set_crs(area_crs)
     area_gdf = area_gdf.to_crs("EPSG:4326")
     area_gdf = area_gdf.sort_values(by="Name")
 
@@ -170,6 +174,11 @@ def add_labour_to_production(
     stats = read_field_sizes(tif_file=field_size_tif_file, area_gdf=area_gdf)
     labour_df = create_stats_df(stats=stats, area_gdf=area_gdf)
     labour_df = add_mechanization_scores(labour_df)
+
+    # labour_df = labour_df[
+    #     labour_df["name"].isin(area_mapping_df["area_map_name"].values)
+    # ]
+    labour_df = labour_df.reset_index(drop=True)
 
     production_df["FTE"] = 0.0
     production_df = production_df.sort_values(by="area_map_name")
