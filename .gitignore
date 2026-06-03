@@ -164,4 +164,4 @@ cython_debug/
 /cache
 
 # VSCode
-.vscode/*
+.vscode
