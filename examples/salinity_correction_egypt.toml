@@ -21,6 +21,8 @@ path = "/Users/hemert/projects/food-security/Food-Security/data/fao-salt-toleran
 
 [salinity_correction.mapping]
 path = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Salinity/Egypt/input.xlsx"
+fao_mapping = "/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Food security/FAO.xlsx",
+field_sizes = "/Users/hemert/data/food-security/field-size/Global Field Sizes/dominant_field_size_categories.tif",
 
 [salinity_correction.crops]
 crops_to_correct = [

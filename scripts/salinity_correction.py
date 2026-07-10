@@ -811,6 +811,48 @@ def correct_salinity(
     return df
 
 
+def generate_crop_yield_csv(config_path: Union[str, Path], save=True, add_labor=False):
+    cfg_path = Path(config_path)
+    config = ConfigReader(cfg_path)
+    salinity_config = config["salinity_correction"]
+
+    corrected_df = correct_crop_yield(
+        land_name=config["main"]["country"],
+        his_file=salinity_config["crop_production"]["path"],
+        hectare_his_file=salinity_config["crop_production"]["ha_path"],
+        communes_file=salinity_config["provinces"]["path"],
+        salinity_dir=salinity_config["salinity_map"]["dir"],
+        salinity_filename=salinity_config["salinity_map"]["filename"],
+        salinity_param_file=salinity_config["salt_tolerance"]["path"],
+        mask_dir=salinity_config["land_use"]["directories"]["Rice, paddy"],
+        mask_filename=salinity_config["land_use"]["filename"]["filename"],
+        fao_mapping_file=salinity_config["mapping"]["fao_mapping"],
+        mapping_file=salinity_config["mapping"]["path"],
+        crops_to_correct=salinity_config["crops"]["crops_to_correct"],
+        area_crs=salinity_config["crs"]["commune"],
+        salinity_crs=salinity_config["crs"]["salinity"],
+        common_unit_filename=salinity_config["departments"]["departments_path"],
+        department_file=salinity_config["departments"]["common_unit_path"],
+        # department_file=None,
+        department_crs=salinity_config["crs"]["department"],
+    )
+
+    if add_labor:
+        corrected_df = append_labour.add_labour_to_production(
+            production_df=corrected_df,
+            field_size_tif_file=salinity_config["mapping"]["field_sizes"],
+            area_gdf_file=salinity_config["departments"]["departments_path"],
+            area_crs=salinity_config["crs"]["department"],
+            mapping_file=salinity_config["mapping"]["path"],
+            labour_mapping_file=salinity_config["mapping"]["fao_mapping"],
+        )
+
+    if save:
+        corrected_df.to_csv(salinity_config["output"]["salinity_path"])
+
+    return corrected_df
+
+
 if __name__ == "__main__":
     cfg_path = Path(
         "/Users/hemert/projects/food-security/Food-Security/examples/salinity_correction_vietnam.toml"

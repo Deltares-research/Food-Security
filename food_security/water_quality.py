@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import rasterio
 import xarray as xr
-from intersect_shapefiles import (
+from food_security.utils import (
     create_command_gdf,
     create_governorates_gdf,
     intersect_shapefiles,
@@ -20,8 +20,7 @@ from rasterio.transform import from_origin
 
 from food_security import data_reader
 from food_security.config import ConfigReader
-
-import salinity_correction
+from food_security import salinity_correction
 
 
 def load_input_data(
@@ -340,13 +339,13 @@ def create_water_df(
         df = convert_to_departments(
             df,
             conversion_matrix,
-            department_gdf,
+            common_unit_gdf,
             indicator_columns=["water_productivity", "hectares"],
         )
         df_time = convert_to_departments(
             df_time,
             conversion_matrix,
-            department_gdf,
+            common_unit_gdf,
             indicator_columns=[
                 "water_use",
                 "water_supply",
@@ -367,32 +366,26 @@ def create_water_df(
     return df, df_time
 
 
-if __name__ == "__main__":
-    cfg_path = Path(
-        "/Users/hemert/projects/food-security/Food-Security/examples/salinity_correction_egypt.toml"
-    )  # Replace with the actual path to your config file
+def generate_water_csv(
+    config_path: Union[str, Path],
+    save=True,
+    corrected_df=None,
+    username="",
+    password="",
+):
+    cfg_path = Path(config_path)
     config = ConfigReader(cfg_path)
     salinity_config = config["salinity_correction"]
 
-    corrected_df = salinity_correction.correct_crop_yield(
-        land_name=config["main"]["country"],
-        his_file=salinity_config["crop_production"]["path"],
-        hectare_his_file=salinity_config["crop_production"]["ha_path"],
-        communes_file=salinity_config["provinces"]["path"],
-        salinity_dir=salinity_config["salinity_map"]["dir"],
-        salinity_filename=salinity_config["salinity_map"]["filename"],
-        salinity_param_file=salinity_config["salt_tolerance"]["path"],
-        mask_dir=salinity_config["land_use"]["directories"]["Rice, paddy"],
-        mask_filename=salinity_config["land_use"]["filename"]["filename"],
-        fao_mapping_file="/Users/hemert/OneDrive - Stichting Deltares/Documents - International Delta Toolset/Food security/FAO.xlsx",
-        mapping_file=salinity_config["mapping"]["path"],
-        crops_to_correct=salinity_config["crops"]["crops_to_correct"],
-        area_crs=salinity_config["crs"]["commune"],
-        salinity_crs=salinity_config["crs"]["salinity"],
-        common_unit_filename=None,
-        department_file=None,
-        department_crs=None,
-    )
+    if corrected_df is None:
+        corrected_df = salinity_correction.generate_crop_yield_csv(
+            config_path=config_path,
+            save=False,
+            add_labor=False,
+            convert_departments=False,
+            username=username,
+            password=password,
+        )
 
     water_df, water_df_time = create_water_df(
         land_name=config["main"]["country"],
@@ -405,5 +398,8 @@ if __name__ == "__main__":
         department_crs=salinity_config["crs"]["department"],
     )
 
-    water_df.to_csv(salinity_config["output"]["water_prod_path"])
-    water_df_time.to_csv(salinity_config["output"]["water_use_path"])
+    if save:
+        water_df.to_csv(salinity_config["output"]["water_prod_path"])
+        water_df_time.to_csv(salinity_config["output"]["water_use_path"])
+
+    return water_df, water_df_time

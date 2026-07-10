@@ -8,6 +8,7 @@ authors = [{name = "Tjalling de Jong", email = "tjalling.dejong@deltares.nl"}]
 readme = "README.md"
 dynamic = ["version", "description"]
 dependencies = [
+    "dotenv>=0.9.9",
     "faostat>=1.1.2",
     "geopandas>=1.1.1",
     "matplotlib>=3.10.3",
