@@ -366,7 +366,7 @@ def create_water_df(
     df_time["water_exploitation_index"] = (
         df_time["water_supply"] / df_time["water_demand"]
     )
-    df_time = df_time.drop(columns=["water_supply", "water_demand"])
+    # df_time = df_time.drop(columns=["water_supply", "water_demand"])
 
     return df, df_time
 
