@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from food_security.fao_api import get_food_production_df
+from food_security.fao_api import FAOClient
 from food_security.interface.base import FSBase
 from food_security.utils import _prep_conversion_table
 
@@ -84,7 +84,7 @@ class FoodProduction(FSBase):
 
     def fetch_foastat_production_data(self) -> pd.DataFrame:
         """Fetch the crop and livestock data of the FAO."""
-        prod_data = get_food_production_df(
+        prod_data = self.fao_client.get_food_production_df(
             country_name=self.cfg["main"]["country"],
             year=self.year,
         )

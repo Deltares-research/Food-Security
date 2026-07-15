@@ -5,7 +5,7 @@ import re
 
 import pandas as pd
 
-from food_security.fao_api import get_trade_matrix_df
+from food_security.fao_api import FAOClient
 from food_security.interface.base import FSBase
 
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ class FoodSupply(FSBase):
     def get_food_trade_fluxes(self) -> pd.DataFrame:
         """Retrieve import and export of food items and calculate the flux."""
         food_items = self.get_food_items
-        trade_matrix_df = get_trade_matrix_df(
+        trade_matrix_df = self.fao_client.get_trade_matrix_df(
             country_name=self.cfg["main"]["country"],
             year=self.year,
         )

@@ -56,8 +56,11 @@ def get_departmental_yield(
     departmental_yields = {}
 
     for col in cols:
-        weighted_yields = df_agg[col] * multiplication_matrix.T
-        departmental_yields[col] = weighted_yields.sum(axis=1)
+        if multiplication_matrix.shape[0] == df_agg.shape[0]:
+            departmental_yields[col] = df_agg[col]
+        else:
+            weighted_yields = df_agg[col] * multiplication_matrix.T
+            departmental_yields[col] = weighted_yields.sum(axis=1)
 
     return departmental_yields
 
@@ -170,6 +173,8 @@ def convert_to_departments(
     departments_gdf: pd.DataFrame,
     indicator_columns: List[str],
 ):
+
+    conversion_matrix = conversion_matrix.T
 
     base_keys = ["year", "area_map_name"]
 
