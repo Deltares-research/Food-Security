@@ -1,4 +1,5 @@
 import datetime
+import logging
 import re
 from pathlib import Path
 from typing import List, Optional, Union
@@ -9,19 +10,21 @@ import numpy as np
 import pandas as pd
 import rasterio
 import xarray as xr
+from rasterio.io import MemoryFile
+from rasterio.mask import mask
+from rasterio.transform import from_origin
+from tqdm.auto import tqdm
+
+from food_security import append_labour, data_reader
+from food_security.config import ConfigReader
+from food_security.fao_api import FAOClient
 from food_security.utils import (
     create_command_gdf,
     create_governorates_gdf,
     intersect_shapefiles,
 )
-from rasterio.io import MemoryFile
-from rasterio.mask import mask
-from rasterio.transform import from_origin
 
-from food_security import data_reader
-from food_security.config import ConfigReader
-from food_security import append_labour
-from food_security.fao_api import FAOClient
+logger = logging.getLogger(__name__)
 
 
 def load_input_data(
@@ -672,20 +675,39 @@ def correct_crop_yield(
         input_path=input_path,
         fao_client=fao_client,
     )
+    logger.info("Starting crop yield correction for %s", land_name)
 
     crops = mapping_df["crop_name"].values
     production_ds, years = get_year_info(production_ds=production_ds)
+
+    logger.info(
+        "Loaded input data. Areas=%d, Crops=%d, Years=%d",
+        len(area_df),
+        len(crops),
+        len(years),
+    )
+
     salinity_ds = None
-    for area in area_df["area_name"]:
-        # Get area from mapping if it exists
-        area_map_name = area_df[area_df["area_name"] == area]["area_map_name"].iloc[0]
+
+    for area in tqdm(area_df["area_name"], desc="Areas"):
+        area_map_name = area_df.loc[area_df["area_name"] == area, "area_map_name"].iloc[
+            0
+        ]
+
         area_id = get_area_id(area_df, area)
-        print(f"{area_id} / {area}")
-        # print(area_id, area, area_map_name, years, crops)
+
         if area_id is None:
+            logger.warning("Skipping area '%s': no area_id found", area)
             continue
-        for crop in crops:
-            # Get FAO crop name and crop id from mapping
+
+        logger.debug(
+            "Processing area '%s' (id=%s, mapped='%s')",
+            area,
+            area_id,
+            area_map_name,
+        )
+
+        for crop in tqdm(crops, desc=f"Crops ({area})", leave=False):
             (
                 crop_fao,
                 crop_fao_salt,
@@ -696,15 +718,38 @@ def correct_crop_yield(
                 crop_start_ts_dt,
                 crop_end_ts_dt,
             ) = get_crop_info(
-                mapping_df, fao_mapping_salt_df, fao_mapping_price_df, crop_id_df, crop
+                mapping_df,
+                fao_mapping_salt_df,
+                fao_mapping_price_df,
+                crop_id_df,
+                crop,
             )
 
-            for year in years:
-                production_area = get_production_value(
-                    production_ds, area_id, crop_id, year
+            if crop_id is None:
+                logger.warning(
+                    "Skipping crop '%s' in area '%s': no crop_id found",
+                    crop,
+                    area,
                 )
+                continue
+
+            for year in tqdm(years, desc="Years", leave=False):
+                production_area = get_production_value(
+                    production_ds,
+                    area_id,
+                    crop_id,
+                    year,
+                )
+
                 if production_area is None:
+                    logger.debug(
+                        "No production value for area=%s crop=%s year=%s",
+                        area,
+                        crop,
+                        year,
+                    )
                     continue
+
                 hectares = get_hectares(
                     hectare_ds=hectare_ds,
                     area=area,
@@ -717,13 +762,23 @@ def correct_crop_yield(
                     crop_end_ts_dt=crop_end_ts_dt,
                     year=year,
                 )
-                if crop_fao == "Soybeans":
-                    ___ = 10
-                crop_pp = get_producer_prices(pp_df=pp_df, crop_name=crop_fao_price)
-                # Check if the crop needs to be corrected
+
+                crop_pp = get_producer_prices(
+                    pp_df=pp_df,
+                    crop_name=crop_fao_price,
+                )
+
                 if crop in crops_to_correct:
+                    logger.debug(
+                        "Applying salinity correction: area=%s crop=%s year=%s",
+                        area,
+                        crop,
+                        year,
+                    )
+
                     a, b, comment = get_salinity_parameters(
-                        salinity_param_df, crop_fao_salt
+                        salinity_param_df,
+                        crop_fao_salt,
                     )
 
                     salinity_filename = Path(salinity_filename)
@@ -764,6 +819,13 @@ def correct_crop_yield(
                         if corrected_yield is None:
                             continue
 
+                    logger.debug(
+                        "Correction result: salinity=%.3f yield=%.3f corrected=%.3f",
+                        salinity,
+                        production_area,
+                        corrected_yield,
+                    )
+
                 else:
                     salinity = 0
                     a, b = 0, 0
@@ -792,8 +854,10 @@ def correct_crop_yield(
                 df_dict["object_id"].append(object_id)
 
     df = pd.DataFrame(df_dict)
+    logger.info("Created dataframe with %d rows", len(df))
 
     if department_file:
+        logger.info("Aggregating results to department level")
         common_unit_gdf = create_command_gdf(
             Path(input_path) / common_unit_filename, crs=department_crs
         )
@@ -814,8 +878,14 @@ def correct_crop_yield(
                 communes_gdf=common_unit_gdf,
                 area_crs=department_crs,
             )
+            logger.info(
+                "Department aggregation complete. Rows=%d",
+                len(df),
+            )
     else:
         df = df.drop(columns=["object_id"])
+
+    logger.info("Crop yield correction finished successfully")
 
     return df
 
@@ -861,6 +931,11 @@ def generate_crop_yield_csv(
     add_labor=False,
     convert_departments=True,
 ):
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
+    )
+
     cfg_path = Path(config_path)
     config = ConfigReader(cfg_path)
     salinity_config = config["salinity_correction"]
