@@ -707,7 +707,7 @@ def correct_crop_yield(
             area_map_name,
         )
 
-        for crop in tqdm(crops, desc=f"Crops ({area})", leave=False):
+        for crop in crops:
             (
                 crop_fao,
                 crop_fao_salt,
@@ -733,7 +733,7 @@ def correct_crop_yield(
                 )
                 continue
 
-            for year in tqdm(years, desc="Years", leave=False):
+            for year in years:
                 production_area = get_production_value(
                     production_ds,
                     area_id,
