@@ -1,16 +1,15 @@
 import re
-import numpy as np
-import pathlib
-import rasterio
+from pathlib import Path
+
 import geopandas as gpd
-import pandas as pd
-import rasterstats
-
-from rasterio.transform import from_origin, Affine, from_bounds
-from rasterio.mask import mask
-from rasterio.io import MemoryFile
-
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import rasterio
+import rasterstats
+from rasterio.io import MemoryFile
+from rasterio.mask import mask
+from rasterio.transform import Affine, from_bounds, from_origin
 
 
 def count_per_type(x, field_type):
@@ -148,22 +147,26 @@ def add_labour(df, production_df, mapping_df, crop, crop_category, year):
 
 def add_labour_to_production(
     production_df: pd.DataFrame,
+    input_path,
     field_size_tif_file,
     area_gdf_file,
     area_crs,
     mapping_file,
     labour_mapping_file,
 ):
+    input_path = Path(input_path)
     labour_crop_mapping_df = pd.read_excel(
-        labour_mapping_file, engine="openpyxl", sheet_name="labour_clc"
+        input_path / labour_mapping_file, engine="openpyxl", sheet_name="labour_clc"
     )
     labour_value_mapping_df = pd.read_excel(
-        labour_mapping_file, engine="openpyxl", sheet_name="labour"
+        input_path / labour_mapping_file, engine="openpyxl", sheet_name="labour"
     )
 
-    area_mapping_df = pd.read_excel(mapping_file, engine="openpyxl", sheet_name="area")
+    area_mapping_df = pd.read_excel(
+        input_path / mapping_file, engine="openpyxl", sheet_name="area"
+    )
 
-    area_gdf = gpd.read_file(area_gdf_file, crs=area_crs)
+    area_gdf = gpd.read_file(input_path / area_gdf_file, crs=area_crs)
     area_gdf = area_gdf.set_crs(area_crs)
     area_gdf = area_gdf.to_crs("EPSG:4326")
     area_gdf = area_gdf.sort_values(by="Name")
@@ -171,7 +174,9 @@ def add_labour_to_production(
     years = production_df["year"].unique()
     crops = production_df["crop_name"].unique()
 
-    stats = read_field_sizes(tif_file=field_size_tif_file, area_gdf=area_gdf)
+    stats = read_field_sizes(
+        tif_file=input_path / field_size_tif_file, area_gdf=area_gdf
+    )
     labour_df = create_stats_df(stats=stats, area_gdf=area_gdf)
     labour_df = add_mechanization_scores(labour_df)
 

@@ -21,6 +21,7 @@ from rasterio.transform import from_origin
 from food_security import data_reader
 from food_security.config import ConfigReader
 from food_security import append_labour
+from food_security.fao_api import FAOClient
 
 
 def load_input_data(
@@ -31,13 +32,19 @@ def load_input_data(
     mapping_file: Union[str, Path],
     fao_mapping_file: Union[str, Path],
     land_name: str,
+    ribasim_path: Union[str, Path],
+    input_path: Union[str, Path],
+    fao_client: FAOClient,
 ):
+    ribasim_path = Path(ribasim_path)
+    input_path = Path(input_path)
+
     # Read the HIS file and create a dataset for crop production data.
-    production_his_file = data_reader.HisFile(his_file, crop=None)
+    production_his_file = data_reader.HisFile(ribasim_path / his_file, crop=None)
     production_his_file.read()
     production_ds = production_his_file.ds.copy(deep=True)
 
-    hectare_his_file = data_reader.HisFile(hectare_his_file, crop=None)
+    hectare_his_file = data_reader.HisFile(ribasim_path / hectare_his_file, crop=None)
     hectare_his_file.read(hia=True)
     hectare_ds = hectare_his_file.ds.copy(deep=True)
     # Read the communes shapefile and create a geopandas dataframe.
@@ -47,21 +54,32 @@ def load_input_data(
         communes_gdf = None
 
     # Read csv file containing salinity threshold and yield decrease per crop from FAO
-    salinity_param_df = pd.read_csv(salinity_param_file)
+    if salinity_param_file == "" or salinity_param_file is None:
+        salinity_param_df = pd.read_csv(
+            Path(__file__).parent.parent / "data/fao-salt-tolerance-parameters.csv"
+        )
+    else:
+        salinity_param_df = pd.read_csv(salinity_param_file)
     # Read the mapping file for crop name from FAO and crop name in RIBASIM model
-    mapping_df = pd.read_excel(mapping_file, engine="openpyxl", sheet_name="crop_id")
+    mapping_df = pd.read_excel(
+        input_path / mapping_file, engine="openpyxl", sheet_name="crop_id"
+    )
     fao_mapping_salt_df = pd.read_excel(
-        fao_mapping_file, engine="openpyxl", sheet_name="Salt"
+        input_path / fao_mapping_file, engine="openpyxl", sheet_name="Salt"
     )
     fao_mapping_price_df = pd.read_excel(
-        fao_mapping_file, engine="openpyxl", sheet_name="Price"
+        input_path / fao_mapping_file, engine="openpyxl", sheet_name="Price"
     )
     # Read the mapping file for area name in communes_gdf and area name and id in RIBASIM model
-    area_df = pd.read_excel(mapping_file, engine="openpyxl", sheet_name="area")
+    area_df = pd.read_excel(
+        input_path / mapping_file, engine="openpyxl", sheet_name="area"
+    )
     # Read file for coupling of crop id and crop name in RIBASIM model
-    crop_id_df = pd.read_excel(mapping_file, engine="openpyxl", sheet_name="crop")
+    crop_id_df = pd.read_excel(
+        input_path / mapping_file, engine="openpyxl", sheet_name="crop"
+    )
 
-    pp_df = get_producer_prices_df(land_name=land_name)
+    pp_df = get_producer_prices_df(fao_client=fao_client, land_name=land_name)
 
     return (
         production_ds,
@@ -400,10 +418,8 @@ def apply_yield_correction(
     return corrected_yield
 
 
-def get_producer_prices_df(land_name: str):
-    area_code = faostat.get_par("PP", "area")[land_name]
-
-    pp_df = faostat.get_data_df("PP", pars={"area": area_code})
+def get_producer_prices_df(fao_client: FAOClient, land_name: str):
+    pp_df = fao_client.get_producer_price_df(country_name=land_name)
     pp_df = pp_df[pp_df["Element"] == "Producer Price (USD/tonne)"]
     pp_df = pp_df[pp_df["Months"] == "Annual value"]
 
@@ -560,13 +576,15 @@ def yield_correction_his(
     crop_end_ts,
     crop_start_ts_dt,
     crop_end_ts_dt,
+    ribasim_path: Union[Path, str],
     salinity_filename: Union[Path, str],
     a: Union[int, float],
     b: Union[int, float],
     salinity_ds: xr.Dataset = None,
 ):
     if salinity_ds is None:
-        salinity_his = data_reader.HisFile(salinity_filename, crop=None)
+        ribasim_path = Path(ribasim_path)
+        salinity_his = data_reader.HisFile(ribasim_path / salinity_filename, crop=None)
         salinity_his.read(hia=True)
         salinity_ds = salinity_his.ds.copy(deep=True)
 
@@ -594,6 +612,9 @@ def yield_correction_his(
 
 def correct_crop_yield(
     land_name: str,
+    fao_client: FAOClient,
+    ribasim_path: Union[str, Path],
+    input_path: Union[str, Path],
     his_file: Union[str, Path],
     hectare_his_file: Union[str, Path],
     salinity_dir: Union[str, Path],
@@ -647,6 +668,9 @@ def correct_crop_yield(
         mapping_file=mapping_file,
         fao_mapping_file=fao_mapping_file,
         land_name=land_name,
+        ribasim_path=ribasim_path,
+        input_path=input_path,
+        fao_client=fao_client,
     )
 
     crops = mapping_df["crop_name"].values
@@ -731,6 +755,7 @@ def correct_crop_yield(
                             crop_start_ts_dt=crop_start_ts_dt,
                             crop_end_ts_dt=crop_end_ts_dt,
                             salinity_filename=salinity_filename,
+                            ribasim_path=ribasim_path,
                             a=a,
                             b=b,
                             salinity_ds=salinity_ds,
@@ -769,8 +794,12 @@ def correct_crop_yield(
     df = pd.DataFrame(df_dict)
 
     if department_file:
-        common_unit_gdf = create_command_gdf(common_unit_filename, crs=department_crs)
-        department_gdf = create_governorates_gdf(department_file, crs=department_crs)
+        common_unit_gdf = create_command_gdf(
+            Path(input_path) / common_unit_filename, crs=department_crs
+        )
+        department_gdf = create_governorates_gdf(
+            Path(input_path) / department_file, crs=department_crs
+        )
         conversion_matrix = intersect_shapefiles(common_unit_gdf, department_gdf)
 
         df = convert_to_departments(df, conversion_matrix, common_unit_gdf)
@@ -827,20 +856,14 @@ def correct_salinity(
 
 def generate_crop_yield_csv(
     config_path: Union[str, Path],
+    fao_client: FAOClient,
     save=True,
     add_labor=False,
     convert_departments=True,
-    username="",
-    password="",
 ):
     cfg_path = Path(config_path)
     config = ConfigReader(cfg_path)
     salinity_config = config["salinity_correction"]
-
-    faostat.set_requests_args(
-        username=username,
-        password=password,
-    )
 
     if convert_departments:
         common_unit_filename = salinity_config["departments"]["common_unit_path"]
@@ -853,6 +876,9 @@ def generate_crop_yield_csv(
 
     corrected_df = correct_crop_yield(
         land_name=config["main"]["country"],
+        fao_client=fao_client,
+        ribasim_path=config["main"]["ribasim_path"],
+        input_path=config["main"]["input_path"],
         his_file=salinity_config["crop_production"]["path"],
         hectare_his_file=salinity_config["crop_production"]["ha_path"],
         communes_file=salinity_config["provinces"]["path"],
@@ -874,6 +900,7 @@ def generate_crop_yield_csv(
     if add_labor:
         corrected_df = append_labour.add_labour_to_production(
             production_df=corrected_df,
+            input_path=config["main"]["input_path"],
             field_size_tif_file=salinity_config["mapping"]["field_sizes"],
             area_gdf_file=salinity_config["departments"]["common_unit_path"],
             area_crs=salinity_config["crs"]["department"],
@@ -882,6 +909,7 @@ def generate_crop_yield_csv(
         )
 
     if save:
-        corrected_df.to_csv(salinity_config["output"]["salinity_path"])
+        output_path = Path(config["main"]["output_path"])
+        corrected_df.to_csv(output_path / salinity_config["output"]["salinity_path"])
 
     return corrected_df

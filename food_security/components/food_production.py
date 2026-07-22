@@ -31,14 +31,28 @@ class FoodProduction(FSBase):
                     config["region_column"]: "Name",
                 },
             )
-        for crop in config["crops"]:
+        crops = config.get("crops", None)
+        if crops is None:
+            crops = crop_data["crop_name"].unique()
+
+        for crop in crops:
             logger.info("Parsing %s yield from file", crop)
-            crop_name = config[crop]["crop_name_fao"]
+            crop_name = config.get(crop, {}).get("crop_name_fao", None)
+            if crop_name is None:
+                crop_name = crop_data[crop_data["crop_name"] == crop][
+                    "crop_name_fao"
+                ].iloc[0]
             crop_df = crop_data[crop_data["crop_name_fao"] == crop_name]
             crop_df = pd.DataFrame(
-                crop_df.groupby(by="Name")[config["yield_column"]].sum().reset_index(),
+                crop_df.groupby(by="Name")[
+                    config.get("yield_column", "corrected_yield")
+                ]
+                .sum()
+                .reset_index(),
             )
-            crop_df = crop_df.rename(columns={config["yield_column"]: crop})
+            crop_df = crop_df.rename(
+                columns={config.get("yield_column", "corrected_yield"): crop}
+            )
             if not crop_df.empty:
                 logger.info("Adding modelled %s production to regions", crop)
 
@@ -88,9 +102,20 @@ class FoodProduction(FSBase):
             country_name=self.cfg["main"]["country"],
             year=self.year,
         )
-        conversion_table = pd.read_csv(
-            self.cfg["food_production"]["fao"]["conversion_table"]["path"],
+        conversion_path = (
+            Path(self.cfg["main"]["input_path"])
+            / self.cfg["food_production"]["fao"]["conversion_table"]["path"]
         )
+
+        if conversion_path.suffix.lower() == ".csv":
+            conversion_table = pd.read_csv(conversion_path)
+        elif conversion_path.suffix.lower() in [".xls", ".xlsx"]:
+            conversion_table = pd.read_excel(
+                conversion_path,
+                sheet_name=self.cfg["food_production"]["fao"]["conversion_table"].get(
+                    "sheet_name", 0
+                ),
+            )
         # Prepare table for merge, removing duplicates and renaming code column
         conversion_table = _prep_conversion_table(conversion_table)
 

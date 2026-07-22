@@ -17,6 +17,7 @@ dependencies = [
     "rasterstats>=0.20.0",
     "scipy>=1.16.0",
     "tomli>=2.2.1",
+    "tqdm>=4.69.0",
     "xarray>=2025.7.1",
 ]
 

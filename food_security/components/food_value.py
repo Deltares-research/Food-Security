@@ -1,6 +1,7 @@
 """Module containing the FoodValue class."""
 
 import re
+from pathlib import Path
 
 import geopandas as gpd
 import pandas as pd
@@ -33,13 +34,12 @@ class FoodValue(FSBase):
                         * 10000  # 100 gr to tonnes
                     )
         # Calculate caloric value for modelled crops
-        for crop in self.cfg["food_production"]["modelled_crops"]["crops"]:
-            row[crop] = (
-                row[crop]
-                * self.cfg["food_production"]["modelled_crops"][crop]["calories"]
-                * 10000
-            )
-
+        # for crop in self.cfg["food_production"]["modelled_crops"]["crops"]:
+        #     row[crop] = (
+        #         row[crop]
+        #         * self.cfg["food_production"]["modelled_crops"][crop]["calories"]
+        #         * 10000
+        #     )
         return row
 
     def get_population(self) -> None:
@@ -83,9 +83,21 @@ class FoodValue(FSBase):
 
     def add_food_value(self) -> None:
         """Add caloric value to modelled and other crops."""
-        calories_table = pd.read_csv(
-            self.cfg["food_production"]["fao"]["conversion_table"]["path"],
+        conversion_path = (
+            Path(self.cfg["main"]["input_path"])
+            / self.cfg["food_production"]["fao"]["conversion_table"]["path"]
         )
+
+        if conversion_path.suffix.lower() == ".csv":
+            calories_table = pd.read_csv(conversion_path)
+        elif conversion_path.suffix.lower() in [".xls", ".xlsx"]:
+            calories_table = pd.read_excel(
+                conversion_path,
+                sheet_name=self.cfg["food_production"]["fao"]["conversion_table"].get(
+                    "sheet_name", 0
+                ),
+            )
+
         calories_table = _prep_conversion_table(calories_table)
         pattern = re.compile(r"^[A-Z ,/]+_[0-9]+$")
         self.region = self.region.apply(

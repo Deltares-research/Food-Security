@@ -7,6 +7,7 @@ from pathlib import Path
 import geopandas as gpd
 import pandas as pd
 
+from food_security.fao_api import FAOClient
 from food_security.components import FoodProduction, FoodSupply, FoodValue
 from food_security.config import ConfigReader
 
@@ -19,11 +20,13 @@ class FoodSecurity:
     def __init__(
         self,
         cfg_path: Path | str,
+        fao_client: FAOClient,
         output_path: Path | str | None = None,
         root: Path | str | None = None,
     ) -> None:
         """Instantiate a food security object."""
         self.config = ConfigReader(cfg_path, root=root)
+        self.fao_client = fao_client
         self.aoi = gpd.read_file(self.config["main"]["aoi"]["path"])
         self.output_path = output_path
         self.years = (
@@ -40,15 +43,21 @@ class FoodSecurity:
             # Calculate food production
             gdf = self.aoi.copy(deep=True)
             gdf["year"] = year
-            food_production = FoodProduction(year=year, cfg=self.config, region=gdf)
+            food_production = FoodProduction(
+                year=year, cfg=self.config, region=gdf, fao_client=self.fao_client
+            )
             gdf = food_production.run()
 
             # Calculate food supply for the provinces
-            food_supply = FoodSupply(year=year, cfg=self.config, region=gdf)
+            food_supply = FoodSupply(
+                year=year, cfg=self.config, region=gdf, fao_client=self.fao_client
+            )
             gdf = food_supply.run()
 
             # Calculate food value and variety
-            food_value = FoodValue(year=year, cfg=self.config, region=gdf)
+            food_value = FoodValue(
+                year=year, cfg=self.config, region=gdf, fao_client=self.fao_client
+            )
             gdf = food_value.run()
 
             # Calculate food security per province

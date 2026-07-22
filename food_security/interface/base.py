@@ -12,17 +12,13 @@ class FSBase:
         year: int,
         cfg: dict,
         region: gpd.GeoDataFrame,
-        fao_username: str = None,
-        fao_password: str = None,
-        fao_token: str = None,
+        fao_client: FAOClient,
     ) -> None:
         """Instantiate a FSBase object."""
         self.year = year
         self.cfg = cfg
         self.region = region
-        self.fao_client = FAOClient(
-            username=fao_username, password=fao_password, token=fao_token
-        )
+        self.fao_client = fao_client
 
     def run(self) -> gpd.GeoDataFrame:
         """Run the add data methods of a FSbase object."""
