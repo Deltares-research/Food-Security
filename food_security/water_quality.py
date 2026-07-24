@@ -28,18 +28,25 @@ def load_input_data(
     wq_his_file: Union[str, Path],
     prod_his_file: Union[str, Path],
     mapping_file: Union[str, Path],
+    ribasim_path: Union[str, Path],
+    input_path: Union[str, Path],
     land_name: str,
 ):
-    wq_his_file = data_reader.HisFile(wq_his_file, crop=None)
+    ribasim_path = Path(ribasim_path)
+    input_path = Path(input_path)
+
+    wq_his_file = data_reader.HisFile(ribasim_path / wq_his_file, crop=None)
     wq_his_file.read(hia=True)
     wq_ds = wq_his_file.ds.copy(deep=True)
 
     # Read the HIS file and create a dataset for crop production data.
-    prod_his_file = data_reader.HisFile(prod_his_file, crop=None)
+    prod_his_file = data_reader.HisFile(ribasim_path / prod_his_file, crop=None)
     prod_his_file.read(hia=True)
     prod_ds = prod_his_file.ds.copy(deep=True)
 
-    area_df = pd.read_excel(mapping_file, engine="openpyxl", sheet_name="area")
+    area_df = pd.read_excel(
+        input_path / mapping_file, engine="openpyxl", sheet_name="area"
+    )
 
     return (wq_ds, prod_ds, area_df)
 
@@ -229,6 +236,8 @@ def convert_to_departments(
 def create_water_df(
     land_name: str,
     corrected_df: pd.DataFrame,
+    ribasim_path: Union[str, Path],
+    input_path: Union[str, Path],
     wq_his_file: Union[str, Path],
     prod_his_file: Union[str, Path],
     mapping_file: Union[str, Path],
@@ -265,6 +274,8 @@ def create_water_df(
         wq_his_file=wq_his_file,
         prod_his_file=prod_his_file,
         mapping_file=mapping_file,
+        ribasim_path=ribasim_path,
+        input_path=input_path,
         land_name=land_name,
     )
 
@@ -394,6 +405,8 @@ def generate_water_csv(
     water_df, water_df_time = create_water_df(
         land_name=config["main"]["country"],
         corrected_df=corrected_df,
+        ribasim_path=config["main"]["ribasim_path"],
+        input_path=config["main"]["input_path"],
         wq_his_file=salinity_config["crop_production"]["wq_path"],
         prod_his_file=salinity_config["crop_production"]["ha_path"],
         mapping_file=salinity_config["mapping"]["path"],
