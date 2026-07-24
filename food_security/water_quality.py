@@ -349,8 +349,12 @@ def create_water_df(
     df_time = pd.DataFrame(df_dict_time)
 
     if department_file:
-        common_unit_gdf = create_command_gdf(common_unit_filename, crs=department_crs)
-        department_gdf = create_governorates_gdf(department_file, crs=department_crs)
+        common_unit_gdf = create_command_gdf(
+            Path(input_path) / common_unit_filename, crs=department_crs
+        )
+        department_gdf = create_governorates_gdf(
+            Path(input_path) / department_file, crs=department_crs
+        )
         conversion_matrix = intersect_shapefiles(common_unit_gdf, department_gdf)
 
         df = convert_to_departments(
