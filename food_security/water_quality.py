@@ -21,6 +21,7 @@ from rasterio.transform import from_origin
 from food_security import data_reader
 from food_security.config import ConfigReader
 from food_security import salinity_correction
+from food_security.fao_api import FAOClient
 
 
 def load_input_data(
@@ -373,10 +374,9 @@ def create_water_df(
 
 def generate_water_csv(
     config_path: Union[str, Path],
+    fao_client: FAOClient,
     save=True,
     corrected_df=None,
-    username="",
-    password="",
 ):
     cfg_path = Path(config_path)
     config = ConfigReader(cfg_path)
@@ -388,8 +388,7 @@ def generate_water_csv(
             save=False,
             add_labor=False,
             convert_departments=False,
-            username=username,
-            password=password,
+            fao_client=fao_client,
         )
 
     water_df, water_df_time = create_water_df(
