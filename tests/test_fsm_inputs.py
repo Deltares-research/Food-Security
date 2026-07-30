@@ -34,7 +34,9 @@ def _quintiles():
 
 
 def _diet():
-    return DietRequirements(group_bounds={FoodGroup.CARBS: ShareBounds(min=0.55, max=0.75)})
+    return DietRequirements(
+        group_bounds={FoodGroup.CARBS: ShareBounds(min=0.55, max=0.75)}
+    )
 
 
 def _inputs(**overrides):

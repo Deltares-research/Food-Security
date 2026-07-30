@@ -62,7 +62,12 @@ class SupplyComponents(BaseModel):
 
     def net(self) -> float:
         """Return net available quantity, clamped at zero."""
-        total = self.production_delta + self.production_other + self.imports - self.exports
+        total = (
+            self.production_delta
+            + self.production_other
+            + self.imports
+            - self.exports
+        )
         return max(0.0, total)
 
 
