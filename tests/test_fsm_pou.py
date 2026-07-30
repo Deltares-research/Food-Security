@@ -1,6 +1,7 @@
 """Tests for the pure PoU math."""
 
 import math
+from statistics import NormalDist
 
 import pytest
 
@@ -12,8 +13,6 @@ def test_pou_when_dec_equals_mder_is_phi_of_half_sigma():
     dec = mder = 2000.0
     cv = 0.3
     sigma = math.sqrt(math.log(1 + cv**2))
-    from statistics import NormalDist
-
     expected = NormalDist().cdf(sigma / 2)
     assert pou_from_dec(dec, cv, mder) == pytest.approx(expected, abs=1e-9)
     assert pou_from_dec(dec, cv, mder) == pytest.approx(0.5583, abs=1e-3)
