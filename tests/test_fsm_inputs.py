@@ -14,13 +14,13 @@ from food_security.fsm.inputs import (
 )
 
 
-def _commodity(code="RICE", group=FoodGroup.CARBS):
+def _commodity(code="RICE", group=FoodGroup.CARBS) -> Commodity:
     return Commodity(
-        code=code, name=code.title(), food_group=group, energy_kcal_per_kg=1300.0
+        code=code, name=code.title(), food_group=group, energy_kcal_per_kg=1300.0,
     )
 
 
-def _quintiles():
+def _quintiles() -> list[Quintile]:
     return [
         Quintile(
             index=i,
@@ -33,13 +33,13 @@ def _quintiles():
     ]
 
 
-def _diet():
+def _diet() -> DietRequirements:
     return DietRequirements(
-        group_bounds={FoodGroup.CARBS: ShareBounds(min=0.55, max=0.75)}
+        group_bounds={FoodGroup.CARBS: ShareBounds(min=0.55, max=0.75)},
     )
 
 
-def _inputs(**overrides):
+def _inputs(**overrides: object) -> ModelInputs:
     base = {
         "country": "Egypt",
         "scenario": "ssp2",
@@ -116,3 +116,18 @@ def test_inputs_reject_duplicate_quintile_index():
     )
     with pytest.raises(ValidationError):
         _inputs(quintiles=q)
+
+
+def test_inputs_reject_quintiles_not_covering_1_to_5() -> None:
+    quints = [
+        Quintile(
+            index=i,
+            food_budget_per_capita_day=20.0,
+            population_share=0.25,
+            cv=0.3,
+            mder=1806.61,
+        )
+        for i in (1, 2, 3, 4)
+    ]
+    with pytest.raises(ValidationError):
+        _inputs(quintiles=quints)

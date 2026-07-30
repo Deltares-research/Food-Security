@@ -51,6 +51,10 @@ class FoodSecurityModel:
 
     def _build_availability(self) -> dict[str, float]:
         """Resolve the net availability mapping the allocator consumes."""
+        # TODO: discarded by run() for now.  # noqa: TD002, TD003, FIX002
+        # Once real net-availability resolution lands here, _allocate() must
+        # be updated to pass the resolved mapping through instead of the raw
+        # self.inputs it receives today.
         return dict(self.inputs.availability)
 
     def _allocate(self) -> AllocationResult:

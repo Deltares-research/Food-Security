@@ -6,7 +6,7 @@ from typing import Self
 
 from pydantic import BaseModel, Field, model_validator
 
-from food_security.fsm.enums import FoodGroup
+from food_security.fsm.enums import FoodGroup  # noqa: TC001 - pydantic runtime need
 
 _SHARE_SUM_TOLERANCE = 1e-6
 
@@ -85,36 +85,48 @@ class ModelInputs(BaseModel):
 
     @model_validator(mode="after")
     def _check(self) -> Self:
+        code_set = self._check_commodities()
+        self._check_amounts(self.availability, "availability")
+        self._check_amounts(self.prices, "price")
+        self._check_keys_known(self.availability, code_set, "availability")
+        self._check_keys_known(self.prices, code_set, "prices")
+        self._check_quintiles()
+        return self
+
+    def _check_commodities(self) -> set[str]:
         codes = [c.code for c in self.commodities]
         if len(codes) != len(set(codes)):
             msg = "commodity codes must be unique"
             raise ValueError(msg)
-        code_set = set(codes)
+        return set(codes)
 
-        for key, value in self.availability.items():
+    @staticmethod
+    def _check_keys_known(
+        amounts: dict[str, float], code_set: set[str], label: str,
+    ) -> None:
+        for key in amounts:
             if key not in code_set:
-                msg = f"availability key {key!r} is not a known commodity code"
-                raise ValueError(msg)
-            if value < 0:
-                msg = f"availability for {key!r} must be non-negative"
+                msg = f"{label} key {key!r} is not a known commodity code"
                 raise ValueError(msg)
 
-        for key, value in self.prices.items():
-            if key not in code_set:
-                msg = f"prices key {key!r} is not a known commodity code"
-                raise ValueError(msg)
+    @staticmethod
+    def _check_amounts(amounts: dict[str, float], label: str) -> None:
+        for key, value in amounts.items():
             if value < 0:
-                msg = f"price for {key!r} must be non-negative"
+                msg = f"{label} for {key!r} must be non-negative"
                 raise ValueError(msg)
 
+    def _check_quintiles(self) -> None:
         indices = [q.index for q in self.quintiles]
         if len(indices) != len(set(indices)):
             msg = "quintile indices must be unique"
+            raise ValueError(msg)
+
+        if set(indices) != {1, 2, 3, 4, 5}:
+            msg = "quintiles must cover indices 1..5 exactly"
             raise ValueError(msg)
 
         total_share = sum(q.population_share for q in self.quintiles)
         if abs(total_share - 1.0) > _SHARE_SUM_TOLERANCE:
             msg = f"quintile population_share must sum to 1.0 (got {total_share})"
             raise ValueError(msg)
-
-        return self
