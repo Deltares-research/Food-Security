@@ -2,7 +2,7 @@ import datetime
 import logging
 import re
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 import faostat
 import geopandas as gpd
@@ -23,9 +23,123 @@ from food_security.utils import (
     create_governorates_gdf,
     intersect_shapefiles,
 )
+import json
+import pystac
 
 logger = logging.getLogger(__name__)
 
+
+def _validate_stac_cfg(stac_cfg: Dict) -> None:
+    """Require TOML STAC keys when the corresponding load flags are enabled."""
+    if stac_cfg.get("data_from_stac_crop", False):
+        missing = [
+            key
+            for key in (
+                "crop_collection_url",
+                "production_item_id",
+                "hectare_item_id",
+            )
+            if not stac_cfg.get(key)
+        ]
+        if missing:
+            raise ValueError(
+                "STAC crop loading enabled but missing "
+                f"[salinity_correction.stac] keys: {missing}"
+            )
+    if stac_cfg.get("data_from_stac_salinity", False):
+        missing = [
+            key
+            for key in ("salinity_collection_url", "salinity_item_template")
+            if not stac_cfg.get(key)
+        ]
+        if missing:
+            raise ValueError(
+                "STAC salinity loading enabled but missing "
+                f"[salinity_correction.stac] keys: {missing}"
+            )
+
+
+def _open_zarr_flexible(uri: str) -> xr.Dataset:
+    try:
+        return xr.open_zarr(uri, consolidated=True)
+    except Exception:
+        return xr.open_zarr(uri, consolidated=False)
+
+
+def _restore_his_var_names(ds: xr.Dataset) -> xr.Dataset:
+    """Rename Zarr-safe variable names back to original HIS names via HIS_VAR_NAME_MAP."""
+    raw = ds.attrs.get("HIS_VAR_NAME_MAP")
+    if not raw:
+        return ds
+    mapping = json.loads(raw) if isinstance(raw, str) else raw
+    rename = {k: v for k, v in mapping.items() if k in ds.data_vars}
+    return ds.rename(rename) if rename else ds
+
+
+def load_crop_ds_from_stac(
+    collection_url: str,
+    item_id: str,
+) -> xr.Dataset:
+    """Load a crop_production Zarr dataset from a STAC item `data` asset."""
+    collection = pystac.Collection.from_file(collection_url)
+    item = collection.get_item(item_id, recursive=True)
+    if item is None:
+        raise KeyError(f"Item not found in collection '{collection.id}': {item_id}")
+    if "data" not in item.assets:
+        raise KeyError(f"Item '{item_id}' has no 'data' asset")
+    ds = _open_zarr_flexible(item.assets["data"].href)
+    ds = _restore_his_var_names(ds)
+    return ds.load().copy(deep=True)
+
+
+def load_salinity_raster_from_stac(
+    collection_url: str,
+    item_id: str,
+    crs: Optional[str] = None,
+):
+    """Open a salinity COG from STAC as a MemoryFile dataset.
+
+    Same return type as ``create_salinity_raster`` so land-use mask / commune
+    overlap postprocessing stays unchanged.
+    """
+    collection = pystac.Collection.from_file(collection_url)
+    item = collection.get_item(item_id, recursive=True)
+    if item is None:
+        raise KeyError(
+            f"Item not found in collection '{collection.id}': {item_id}"
+        )
+    if "data" not in item.assets:
+        raise KeyError(f"Item '{item_id}' has no 'data' asset")
+
+    with rasterio.open(item.assets["data"].href) as src:
+        data = src.read(1).astype("float64")
+        transform = src.transform
+        raster_crs = src.crs
+        nodata = src.nodata
+
+    if nodata is not None and not (
+        isinstance(nodata, float) and np.isnan(nodata)
+    ):
+        data = np.where(data == nodata, np.nan, data)
+    data = np.where(data <= -9999, np.nan, data)
+
+    if crs is not None:
+        raster_crs = crs
+
+    memfile = MemoryFile()
+    dst = memfile.open(
+        driver="GTiff",
+        height=data.shape[0],
+        width=data.shape[1],
+        count=1,
+        dtype="float64",
+        crs=raster_crs,
+        transform=transform,
+        nodata=np.nan,
+    )
+    dst.write(data, 1)
+    dst._sal_memfile = memfile  # type: ignore[attr-defined]
+    return dst
 
 def load_input_data(
     his_file: Union[str, Path],
@@ -38,18 +152,30 @@ def load_input_data(
     ribasim_path: Union[str, Path],
     input_path: Union[str, Path],
     fao_client: FAOClient,
+    stac_cfg: Optional[Dict] = None,
 ):
     ribasim_path = Path(ribasim_path)
     input_path = Path(input_path)
+    stac_cfg = stac_cfg or {}
 
-    # Read the HIS file and create a dataset for crop production data.
-    production_his_file = data_reader.HisFile(ribasim_path / his_file, crop=None)
-    production_his_file.read()
-    production_ds = production_his_file.ds.copy(deep=True)
+    if stac_cfg.get("data_from_stac_crop", False):
+        production_ds = load_crop_ds_from_stac(
+            stac_cfg["crop_collection_url"],
+            stac_cfg["production_item_id"],
+        )
+        hectare_ds = load_crop_ds_from_stac(
+            stac_cfg["crop_collection_url"],
+            stac_cfg["hectare_item_id"],
+        )
+    else:
+        # Read the HIS file and create a dataset for crop production data.
+        production_his_file = data_reader.HisFile(ribasim_path / his_file, crop=None)
+        production_his_file.read()
+        production_ds = production_his_file.ds.copy(deep=True)
 
-    hectare_his_file = data_reader.HisFile(ribasim_path / hectare_his_file, crop=None)
-    hectare_his_file.read(hia=True)
-    hectare_ds = hectare_his_file.ds.copy(deep=True)
+        hectare_his_file = data_reader.HisFile(ribasim_path / hectare_his_file, crop=None)
+        hectare_his_file.read(hia=True)
+        hectare_ds = hectare_his_file.ds.copy(deep=True)
     # Read the communes shapefile and create a geopandas dataframe.
     if communes_file:
         communes_gdf = gpd.read_file(communes_file)
@@ -370,12 +496,20 @@ def compute_salinity(
     communes_gdf: gpd.GeoDataFrame,
     salinity_crs: str,
     area_crs: str,
+    stac_cfg: Optional[Dict] = None,
 ):
-    # Create salinity raster for the year
-    salinity_file = Path(str(salinity_filename).replace("{YEAR}", str(year)))
-    raster = create_salinity_raster(
-        Path(salinity_dir) / salinity_file, crs=salinity_crs
-    )
+    # Create / open salinity raster for the year (XYZ local or STAC COG).
+    stac_cfg = stac_cfg or {}
+    if stac_cfg.get("data_from_stac_salinity", False):
+        item_id = str(stac_cfg["salinity_item_template"]).replace("{YEAR}", str(year))
+        raster = load_salinity_raster_from_stac(
+            stac_cfg["salinity_collection_url"], item_id, crs=salinity_crs
+        )
+    else:
+        salinity_file = Path(str(salinity_filename).replace("{YEAR}", str(year)))
+        raster = create_salinity_raster(
+            Path(salinity_dir) / salinity_file, crs=salinity_crs
+        )
 
     # Create mask from landuse file
     mask_file = mask_filename.replace("{YEAR}", str(year))
@@ -554,6 +688,7 @@ def yield_correction_xyz(
     area_crs: str,
     a: Union[int, float],
     b: Union[int, float],
+    stac_cfg: Optional[Dict] = None,
 ):
     salinity, overlapped_raster = compute_salinity(
         area,
@@ -565,6 +700,7 @@ def yield_correction_xyz(
         communes_gdf,
         salinity_crs,
         area_crs,
+        stac_cfg=stac_cfg,
     )
     corrected_yield = apply_yield_correction(production_area, overlapped_raster, a, b)
 
@@ -634,8 +770,13 @@ def correct_crop_yield(
     common_unit_filename: Optional[Union[str, Path]] = None,
     department_file: Optional[Union[str, Path]] = None,
     department_crs: Optional[str] = None,
+    stac_cfg: Optional[Dict] = None,
 ):
     # Initialize a dictionary to store the results (columns in csv)
+    stac_cfg = stac_cfg or {}
+    _validate_stac_cfg(stac_cfg)
+    data_from_stac_salinity = stac_cfg.get("data_from_stac_salinity", False)
+
     df_dict = {
         "area_map_name": [],
         "crop_name": [],
@@ -674,6 +815,7 @@ def correct_crop_yield(
         ribasim_path=ribasim_path,
         input_path=input_path,
         fao_client=fao_client,
+        stac_cfg=stac_cfg,
     )
     logger.info("Starting crop yield correction for %s", land_name)
 
@@ -782,7 +924,11 @@ def correct_crop_yield(
                     )
 
                     salinity_filename = Path(salinity_filename)
-                    if salinity_filename.suffix == ".xyz":
+                    use_xyz_or_stac = (
+                        data_from_stac_salinity
+                        or salinity_filename.suffix == ".xyz"
+                    )
+                    if use_xyz_or_stac:
                         corrected_yield, salinity = yield_correction_xyz(
                             production_area=production_area,
                             area=area_map_name,
@@ -796,6 +942,7 @@ def correct_crop_yield(
                             area_crs=area_crs,
                             a=a,
                             b=b,
+                            stac_cfg=stac_cfg,
                         )
                     elif (
                         salinity_filename.suffix == ".his"
@@ -867,7 +1014,7 @@ def correct_crop_yield(
         conversion_matrix = intersect_shapefiles(common_unit_gdf, department_gdf)
 
         df = convert_to_departments(df, conversion_matrix, common_unit_gdf)
-        if salinity_filename.suffix == ".xyz":
+        if data_from_stac_salinity or Path(salinity_filename).suffix == ".xyz":
             df = correct_salinity(
                 df=df,
                 salinity_dir=salinity_dir,
@@ -877,6 +1024,7 @@ def correct_crop_yield(
                 mask_filename=mask_filename,
                 communes_gdf=common_unit_gdf,
                 area_crs=department_crs,
+                stac_cfg=stac_cfg,
             )
             logger.info(
                 "Department aggregation complete. Rows=%d",
@@ -899,6 +1047,7 @@ def correct_salinity(
     mask_filename,
     communes_gdf,
     area_crs,
+    stac_cfg: Optional[Dict] = None,
 ):
     for i, row in df.iterrows():
         a, b = row["a"], row["b"]
@@ -918,6 +1067,7 @@ def correct_salinity(
                 area_crs=area_crs,
                 a=a,
                 b=b,
+                stac_cfg=stac_cfg,
             )
             df.loc[i, "corrected_yield"] = corrected_yield
             df.loc[i, "salinity"] = salinity
@@ -949,6 +1099,8 @@ def generate_crop_yield_csv(
         department_file = None
         department_crs = None
 
+    stac_cfg = salinity_config.get("stac", {})
+
     corrected_df = correct_crop_yield(
         land_name=config["main"]["country"],
         fao_client=fao_client,
@@ -970,6 +1122,7 @@ def generate_crop_yield_csv(
         common_unit_filename=common_unit_filename,
         department_file=department_file,
         department_crs=department_crs,
+        stac_cfg=stac_cfg,
     )
 
     if add_labor:

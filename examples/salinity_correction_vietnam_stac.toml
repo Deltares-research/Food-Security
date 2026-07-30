@@ -1,0 +1,63 @@
+[main]
+output_path = "./output"
+country = "Viet Nam"
+# Empty when crop/mapping paths in this file are already absolute.
+ribasim_path = ""
+input_path = ""
+
+[salinity_correction.provinces]
+path = "C:/Users/fuentesm/OneDrive - Stichting Deltares/International Delta Toolset - Salinity/Vietnam/provc.shp"
+
+[salinity_correction.salinity_map]
+dir = "C:/Users/fuentesm/OneDrive - Stichting Deltares/International Delta Toolset - Salinity/Vietnam/scenarios/base/"
+filename = "vmd3d_{YEAR}_salinity_50_map.xyz"
+
+[salinity_correction.crop_production]
+path = "P:/11211454-002-idt/IDP/Vietnam/Ribasim8_MekDelta26/Modules/ribasim/Mekong.1/work/RIB_CULT_prod.his"
+ha_path = "P:/11211454-002-idt/IDP/Vietnam/Ribasim8_MekDelta26/Modules/ribasim/Mekong.1/work/RIB_ADVIR_dmnd.his"
+wq_path = "P:/11211454-002-idt/IDP/Vietnam/Ribasim8_MekDelta26/Modules/ribasim/Mekong.1/work/RIB_ADVIR.his"
+
+[salinity_correction.salt_tolerance]
+path = "C:/Ocean/Work/Projects/2026/IDP/Tools/Food-Security/data/fao-salt-tolerance-parameters.csv"
+
+[salinity_correction.mapping]
+path = "C:/Users/fuentesm/OneDrive - Stichting Deltares/International Delta Toolset - Salinity/Vietnam/input.xlsx"
+fao_mapping = "C:/Users/fuentesm/OneDrive - Stichting Deltares/International Delta Toolset - Food security/FAO.xlsx"
+field_sizes = "C:/Users/fuentesm/OneDrive - Stichting Deltares/International Delta Toolset - Food security/field-sizes/dominant_field_size_categories.tif"
+
+[salinity_correction.crops]
+crops_to_correct = [
+    "WinterSpring (ha)"
+]
+
+
+[salinity_correction.land_use.directories]
+"Rice, paddy" = "C:/Users/fuentesm/OneDrive - Stichting Deltares/International Delta Toolset - Salinity/Vietnam/land_use/"
+
+[salinity_correction.land_use.filename]
+filename = "landuse_mask_rice_{YEAR}.tif"
+
+[salinity_correction.output]
+salinity_path = "C:/Users/fuentesm/OneDrive - Stichting Deltares/International Delta Toolset - Salinity/Vietnam/results/corrected-yield-base-test.csv"
+water_prod_path = ""
+water_use_path = ""
+
+[salinity_correction.crs]
+commune = "EPSG:32648"
+salinity = "EPSG:32648"
+department = "EPSG:32648"
+
+[salinity_correction.departments]
+common_unit_path = "C:/Users/fuentesm/OneDrive - Stichting Deltares/International Delta Toolset - Salinity/Vietnam/province_fwzone.shp"
+departments_path = "C:/Users/fuentesm/OneDrive - Stichting Deltares/International Delta Toolset - Salinity/Vietnam/provc.shp"
+
+# STAC inputs (required when data_from_stac_* flags are true)
+[salinity_correction.stac]
+data_from_stac_crop = true
+data_from_stac_salinity = true
+crop_collection_url = "https://storage.googleapis.com/gca-data-public/gca/gca-stac-7/crop_production/collection.json"
+production_item_id = "RIB_CULT_prod"
+hectare_item_id = "RIB_ADVIR_dmnd"
+salinity_collection_url = "https://storage.googleapis.com/gca-data-public/gca/gca-stac-7/salinity/collection.json"
+salinity_item_template = "baseline/p50_{YEAR}.tif"
+
