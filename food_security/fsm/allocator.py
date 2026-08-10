@@ -12,13 +12,37 @@ if TYPE_CHECKING:
 
 
 class AllocationResult(BaseModel):
-    """Per-quintile results of the Q5->Q1 diet-allocation cascade."""
+    """Per-quintile results of the diet-allocation cascade.
 
-    consumption: dict[int, dict[str, float]] = Field(default_factory=dict)
-    dec: dict[int, float]
-    penalized_sufficiency: dict[int, float]
-    penalized_diversity: dict[int, float]
-    income_for_food_fraction: dict[int, float]
+    Every field is keyed by quintile index (1..5). `dec` is the input the PoU
+    calculation consumes; the rest are reported through to the output. All raw
+    fractions/rates here are unscaled (not yet multiplied to percentages).
+    """
+
+    consumption: dict[int, dict[str, float]] = Field(
+        default_factory=dict,
+        description=(
+            "Chosen per-capita diet: {quintile: {commodity code: quantity}}."
+        ),
+    )
+    dec: dict[int, float] = Field(
+        description=(
+            "Dietary Energy Consumption per quintile (kcal/capita/day): the "
+            "mean energy intake achieved by the allocated diet. Feeds PoU."
+        ),
+    )
+    penalized_sufficiency: dict[int, float] = Field(
+        description="Energy-shortfall penalty term per quintile (objective cost).",
+    )
+    penalized_diversity: dict[int, float] = Field(
+        description="Diversity-violation penalty term per quintile (objective cost).",
+    )
+    income_for_food_fraction: dict[int, float] = Field(
+        description=(
+            "Share of income the quintile must spend to afford its diet, as a "
+            "fraction (0-1)."
+        ),
+    )
 
 
 @runtime_checkable

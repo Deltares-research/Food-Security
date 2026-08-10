@@ -1,4 +1,14 @@
-"""Pure Prevalence-of-Undernourishment math (FAO log-normal method)."""
+"""Pure Prevalence-of-Undernourishment (PoU) math (FAO log-normal method).
+
+PoU is the share of a population whose habitual energy intake falls below its
+Minimum Dietary Energy Requirement (MDER). Following the FAO method, habitual
+intake is treated as a log-normal distribution whose mean is the group's
+Dietary Energy Consumption (DEC) and whose spread is set by a coefficient of
+variation (CV); PoU is the probability mass of that distribution below MDER.
+
+These functions are deliberately free of the model's types so the math can be
+tested and reused in isolation.
+"""
 
 from __future__ import annotations
 

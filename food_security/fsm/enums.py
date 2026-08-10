@@ -4,7 +4,12 @@ from enum import Enum
 
 
 class FoodGroup(str, Enum):
-    """Diet food groups used for the dietary-diversity constraints."""
+    """Coarse food groups every commodity maps to for the diversity rules.
+
+    A balanced diet is not just enough calories but calories from a spread of
+    groups. Each commodity is tagged with one of these, and the diet
+    requirements bound how much of total energy each group may supply.
+    """
 
     CARBS = "carbs"
     PROTEIN = "protein"
