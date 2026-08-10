@@ -6,7 +6,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from food_security.fsm.enums import ALLOCATION_ORDER
+from food_security.fsm.enums import AllocationDirection
 
 
 class PenaltyWeights(BaseModel):
@@ -26,5 +26,5 @@ class RunConfig(BaseModel):
     """Settings controlling a single model run."""
 
     weights: PenaltyWeights
-    allocation_order: tuple[int, ...] = ALLOCATION_ORDER
+    allocation_direction: AllocationDirection = AllocationDirection.RICHEST_FIRST
     solver_options: dict[str, Any] = Field(default_factory=dict)

@@ -11,7 +11,7 @@ from food_security.fsm.allocator import (
     StubAllocator,
 )
 from food_security.fsm.config import PenaltyWeights, RunConfig
-from food_security.fsm.enums import ALLOCATION_ORDER, FoodGroup
+from food_security.fsm.enums import AllocationDirection, FoodGroup
 from food_security.fsm.errors import (
     FSMError,
     InfeasibleAllocation,
@@ -29,7 +29,7 @@ from food_security.fsm.model import FoodSecurityModel
 from food_security.fsm.results import FoodSecurityResult, QuintileOutcome
 
 __all__ = [
-    "ALLOCATION_ORDER",
+    "AllocationDirection",
     "AllocationResult",
     "Commodity",
     "DietAllocator",
