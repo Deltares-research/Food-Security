@@ -32,6 +32,13 @@ class FAOClient:
         coding = {"reporterarea": "FAO"}
         return self._get_fao_df("TM", pars=pars, coding=coding)
 
+    def get_food_balances(self, country_name: str, year: int = None) -> pd.DataFrame:
+        area_code = faostat.get_par("FBS", "area")[country_name]
+
+        pars = {"area": area_code, "year": str(year)}
+        coding = {}
+        return self._get_fao_df("FBS", pars=pars, coding=coding)
+
     def get_producer_price_df(
         self, country_name: str, year: int = None
     ) -> pd.DataFrame:

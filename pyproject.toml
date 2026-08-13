@@ -8,11 +8,13 @@ authors = [{name = "Tjalling de Jong", email = "tjalling.dejong@deltares.nl"}]
 readme = "README.md"
 dynamic = ["version", "description"]
 dependencies = [
+    "cyipopt>=1.7.0",
     "dotenv>=0.9.9",
     "faostat>=1.1.2",
     "geopandas>=1.1.1",
     "matplotlib>=3.10.3",
     "openpyxl>=3.1.5",
+    "pyomo>=6.10.1",
     "pystac>=1.13.0",
     "rasterio>=1.4.3",
     "rasterstats>=0.20.0",

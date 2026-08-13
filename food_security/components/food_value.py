@@ -66,6 +66,12 @@ class FoodValue(FSBase):
             "geometry",
             "population",
             "year",
+            "OBJECTID",
+            "Shape_Leng",
+            "Shape_Area",
+            "Feddan",
+            "ssp",
+            "GDP",
         ]
 
         food_cols = [

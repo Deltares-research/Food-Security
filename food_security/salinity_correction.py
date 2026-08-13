@@ -105,9 +105,7 @@ def load_salinity_raster_from_stac(
     collection = pystac.Collection.from_file(collection_url)
     item = collection.get_item(item_id, recursive=True)
     if item is None:
-        raise KeyError(
-            f"Item not found in collection '{collection.id}': {item_id}"
-        )
+        raise KeyError(f"Item not found in collection '{collection.id}': {item_id}")
     if "data" not in item.assets:
         raise KeyError(f"Item '{item_id}' has no 'data' asset")
 
@@ -117,9 +115,7 @@ def load_salinity_raster_from_stac(
         raster_crs = src.crs
         nodata = src.nodata
 
-    if nodata is not None and not (
-        isinstance(nodata, float) and np.isnan(nodata)
-    ):
+    if nodata is not None and not (isinstance(nodata, float) and np.isnan(nodata)):
         data = np.where(data == nodata, np.nan, data)
     data = np.where(data <= -9999, np.nan, data)
 
@@ -140,6 +136,7 @@ def load_salinity_raster_from_stac(
     dst.write(data, 1)
     dst._sal_memfile = memfile  # type: ignore[attr-defined]
     return dst
+
 
 def load_input_data(
     his_file: Union[str, Path],
@@ -173,7 +170,9 @@ def load_input_data(
         production_his_file.read()
         production_ds = production_his_file.ds.copy(deep=True)
 
-        hectare_his_file = data_reader.HisFile(ribasim_path / hectare_his_file, crop=None)
+        hectare_his_file = data_reader.HisFile(
+            ribasim_path / hectare_his_file, crop=None
+        )
         hectare_his_file.read(hia=True)
         hectare_ds = hectare_his_file.ds.copy(deep=True)
     # Read the communes shapefile and create a geopandas dataframe.
@@ -444,7 +443,7 @@ def get_production_value(production_ds, area_id, crop_id, year):
         production_commune = production_ds.sel(
             {"station": production_station, "time": f"{year}-01-01"}
         )["Actual farm gate pr"].values
-    except KeyError:
+    except KeyError as e:
         production_commune = None
 
     return production_commune
@@ -925,8 +924,7 @@ def correct_crop_yield(
 
                     salinity_filename = Path(salinity_filename)
                     use_xyz_or_stac = (
-                        data_from_stac_salinity
-                        or salinity_filename.suffix == ".xyz"
+                        data_from_stac_salinity or salinity_filename.suffix == ".xyz"
                     )
                     if use_xyz_or_stac:
                         corrected_yield, salinity = yield_correction_xyz(

@@ -69,9 +69,10 @@ class FoodSecurity:
             if self.output_path
             else Path(self.config["main"]["output_path"])
         )
-        output_path.parent.mkdir(exist_ok=True)
+        Path(output_path).parent.mkdir(exist_ok=True)
         results = pd.concat(results)
-        results.to_file(output_path)
+        results.to_file(Path(output_path) / "food_security_output.gpkg")
+        results.to_csv(Path(output_path) / "food_security_output.csv")
 
     def _calculate_food_security(self, region: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
         return region
