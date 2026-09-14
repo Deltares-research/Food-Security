@@ -26,7 +26,7 @@ field_sizes = "/Users/hemert/data/food-security/field-size/Global Field Sizes/do
 
 [salinity_correction.crops]
 crops_to_correct = [
-    "Bean_FBEAN1 (ha)",
+    "Bean_FBEAN1 (",
     "LongBerseem_LBSEEM1 (ha)",
     "ShortBerseem_SBSEMW1 (ha)",
     "Cotton_SDELS1 (ha)",
