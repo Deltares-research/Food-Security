@@ -34,7 +34,7 @@ def load_input_data(
 ):
     # Read the HIS file and create a dataset for crop production data.
     production_his_file = data_reader.HisFile(his_file, crop=None)
-    production_his_file.read()
+    production_his_file.read(hia=True)
     production_ds = production_his_file.ds.copy(deep=True)
 
     hectare_his_file = data_reader.HisFile(hectare_his_file, crop=None)
