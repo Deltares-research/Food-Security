@@ -128,7 +128,7 @@ class FSOptimizer:
         model.foods = pyo.Set(initialize=foods)
 
         model.p = pyo.Param(
-            model.foods, initialize=self.input_df["usd_per_kg"].to_dict()
+            model.foods, initialize=self.input_df["market_price"].to_dict()
         )
         model.E = pyo.Param(
             model.foods, initialize=self.input_df["calories_kcal_kg"].to_dict()
