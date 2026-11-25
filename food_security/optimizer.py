@@ -37,13 +37,13 @@ class FSOptimizer:
             "carb": 0.0,
             "protein": 0.24,
             "fat": 0.15,
-            "fruitvege": 0.5,
+            "fruitvege": 0.4,
         },
         theta_max_dict: Optional[Dict[str, Union[int, float]]] = {
-            "carb": 0.55,
-            "protein": 1.0,
-            "fat": 1.0,
-            "fruitvege": np.inf,
+            "carb": 0.7,
+            "protein": 0.3,
+            "fat": 0.2,
+            "fruitvege": 0.5,
         },
         lambda_p: Optional[Union[int, float]] = 1.0,
         lambda_E: Optional[Union[int, float]] = 1.0,
@@ -356,6 +356,9 @@ class FSOptimizer:
                 m.d_group[g]
                 >= m.group_energy[g] / m.total_energy - self.theta_max_dict[g]
             )
+            return rule
+        elif g == "fruitvege":
+            rule = m.d_group[g] >= m.group_consumption[g] / self.theta_max_dict[g] - 1
             return rule
         return pyo.Constraint.Skip
 
